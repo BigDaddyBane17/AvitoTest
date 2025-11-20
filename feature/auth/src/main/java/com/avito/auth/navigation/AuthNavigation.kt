@@ -11,11 +11,13 @@ data object AuthRoute
 
 fun NavGraphBuilder.authScreen(
     authComponentFactory: AuthComponent.Factory,
+    webClientId: String,
     onAuthSuccess: () -> Unit
 ) {
     composable<AuthRoute> {
         AuthScreen(
             authComponentFactory = authComponentFactory,
+            webClientId = webClientId,
             onAuthSuccess = onAuthSuccess
         )
     }

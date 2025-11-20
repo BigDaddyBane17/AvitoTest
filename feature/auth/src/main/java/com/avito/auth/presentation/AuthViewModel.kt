@@ -67,6 +67,14 @@ class AuthViewModel @Inject constructor(
             AuthIntent.Submit -> submit()
             AuthIntent.ForgotPassword -> sendReset()
             AuthIntent.DismissMessage -> updateContent { it.copy(errorMessage = null, infoMessage = null) }
+            is AuthIntent.GoogleSignInToken -> signInWithGoogle(intent.idToken)
+            is AuthIntent.GoogleSignInFailed -> updateContent {
+                it.copy(
+                    isLoading = false,
+                    errorMessage = intent.message,
+                    infoMessage = null
+                )
+            }
         }
     }
 
@@ -95,6 +103,31 @@ class AuthViewModel @Inject constructor(
                 authRepository.signUp(current.name.trim(), email, password)
             }
 
+            result
+                .onSuccess { _uiState.value = AuthUiState.Success }
+                .onFailure { error ->
+                    updateContent {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.toReadableMessage()
+                        )
+                    }
+                }
+        }
+    }
+
+    private fun signInWithGoogle(idToken: String) {
+        val current = _uiState.value as? AuthUiState.Content ?: return
+        if (current.isLoading) return
+
+        _uiState.value = current.copy(
+            isLoading = true,
+            errorMessage = null,
+            infoMessage = null
+        )
+
+        viewModelScope.launch {
+            val result = authRepository.signInWithGoogle(idToken.trim())
             result
                 .onSuccess { _uiState.value = AuthUiState.Success }
                 .onFailure { error ->

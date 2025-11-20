@@ -1,5 +1,8 @@
 package com.avito.auth.presentation
 
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -35,23 +40,64 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.avito.auth.di.AuthComponent
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 
 @Composable
 fun AuthScreen(
     authComponentFactory: AuthComponent.Factory,
+    webClientId: String,
     onAuthSuccess: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     val authComponent = remember(authComponentFactory) { authComponentFactory.create() }
     val viewModelFactory = remember(authComponent) { authComponent.viewModelFactory() }
     val viewModel: AuthViewModel = viewModel(factory = viewModelFactory)
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val googleSignInOptions = remember(webClientId) {
+        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(webClientId)
+            .requestEmail()
+            .build()
+    }
+    val googleSignInClient = remember(googleSignInOptions, context) {
+        GoogleSignIn.getClient(context, googleSignInOptions)
+    }
+
+    val googleLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val token = account?.idToken
+            if (token != null) {
+                viewModel.onIntent(AuthIntent.GoogleSignInToken(token))
+            } else {
+                viewModel.onIntent(AuthIntent.GoogleSignInFailed("Google не вернул токен"))
+            }
+        } catch (e: ApiException) {
+            val message = when (result.resultCode) {
+                Activity.RESULT_CANCELED -> "Вход через Google отменён"
+                else -> e.localizedMessage ?: "Не удалось выполнить вход через Google"
+            }
+            viewModel.onIntent(AuthIntent.GoogleSignInFailed(message))
+        }
+    }
+
     when (val state = uiState) {
         is AuthUiState.Content -> AuthForm(
             state = state,
             modifier = modifier,
-            onIntent = viewModel::onIntent
+            onIntent = viewModel::onIntent,
+            onGoogleSignInClick = {
+                googleSignInClient.signOut().addOnCompleteListener {
+                    googleLauncher.launch(googleSignInClient.signInIntent)
+                }
+            }
         )
         AuthUiState.Success -> {
             LaunchedEffect(Unit) {
@@ -77,7 +123,8 @@ fun AuthScreen(
 private fun AuthForm(
     state: AuthUiState.Content,
     modifier: Modifier = Modifier,
-    onIntent: (AuthIntent) -> Unit
+    onIntent: (AuthIntent) -> Unit,
+    onGoogleSignInClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     val isSignIn = state.mode == AuthMode.SignIn
@@ -222,6 +269,16 @@ private fun AuthForm(
                     .height(48.dp)
             ) {
                 Text(text = if (isSignIn) "Войти" else "Создать аккаунт")
+            }
+
+            OutlinedButton(
+                onClick = onGoogleSignInClick,
+                enabled = !state.isLoading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
+                Text("Продолжить с Google")
             }
 
             if (isSignIn) {

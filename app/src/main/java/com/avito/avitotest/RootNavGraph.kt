@@ -24,6 +24,7 @@ fun RootNavGraph(
     navController: NavHostController,
     startDestination: ScreenRoute,
     appComponent: AppComponent,
+    googleWebClientId: String,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
@@ -31,7 +32,7 @@ fun RootNavGraph(
         startDestination = startDestination,
         modifier = modifier
     ) {
-        addAuthGraph(navController, appComponent)
+        addAuthGraph(navController, appComponent, googleWebClientId)
         addBookListGraph(navController)
         addUploadBookGraph(navController)
         addProfileGraph(navController)
@@ -42,12 +43,14 @@ fun RootNavGraph(
 private fun NavGraphBuilder.addAuthGraph(
     navController: NavHostController,
     appComponent: AppComponent,
+    googleWebClientId: String,
 ) {
     navigation<ScreenRoute.Auth>(
         startDestination = AuthRoute,
     ) {
         authScreen(
             authComponentFactory = appComponent.authComponentFactory(),
+            webClientId = googleWebClientId,
             onAuthSuccess = {
                 navController.navigate(ScreenRoute.BookList) {
                     popUpTo<ScreenRoute.Auth> {

@@ -10,4 +10,6 @@ sealed interface AuthIntent {
     data object Submit : AuthIntent
     data object ForgotPassword : AuthIntent
     data object DismissMessage : AuthIntent
+    data class GoogleSignInToken(val idToken: String) : AuthIntent
+    data class GoogleSignInFailed(val message: String) : AuthIntent
 }
