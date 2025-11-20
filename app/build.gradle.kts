@@ -52,13 +52,14 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":feature:auth"))
     implementation(project(":feature:booksList"))
-    implementation(project(":feature:bookDownload"))
     implementation(project(":feature:bookReader"))
+    implementation(project(":feature:bookUpload"))
     implementation(project(":feature:profile"))
 
 
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose.base)
+    implementation(libs.bundles.firebase)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.navigation.compose)
     implementation(libs.bundles.coroutines)

@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.avito.feature.auth"
+    namespace = "com.avito.feature.bookupload"
     compileSdk = 36
 
     defaultConfig {
@@ -32,14 +32,16 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:navigation"))
     implementation(project(":core:firebase"))
+    implementation(project(":core:database"))
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose.base)
-    implementation(libs.bundles.firebase)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.navigation.compose)
     implementation(libs.bundles.coroutines)
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
+    implementation(libs.lottie)
+    implementation(libs.lottie.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
