@@ -44,12 +44,12 @@ android {
 }
 
 dependencies {
-    // core
     implementation(project(":core:common"))
     implementation(project(":core:database"))
     implementation(project(":core:firebase"))
     implementation(project(":core:navigation"))
     implementation(project(":core:ui"))
+    implementation(project(":core:di"))
     implementation(project(":feature:auth"))
     implementation(project(":feature:booksList"))
     implementation(project(":feature:bookReader"))

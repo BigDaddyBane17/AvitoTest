@@ -9,13 +9,15 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.avito.avitotest.di.AppComponent
 import com.avito.navigation.BottomNavigationBar
 import com.avito.navigation.ScreenRoute
 import com.avito.navigation.TopAppBar
 
 @Composable
 fun RootAppScreen(
-    isAuthorized: Boolean
+    isAuthorized: Boolean,
+    appComponent: AppComponent
 ) {
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
@@ -52,6 +54,7 @@ fun RootAppScreen(
         RootNavGraph(
             navController = navController,
             startDestination = startDestination,
+            appComponent = appComponent,
             modifier = Modifier.padding(padding),
         )
     }

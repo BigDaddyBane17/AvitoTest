@@ -4,9 +4,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class FirebaseAuthRepository(
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+class FirebaseAuthRepository @Inject constructor(
+    private val auth: FirebaseAuth
 ) : AuthRepository {
 
     override suspend fun signIn(email: String, password: String): Result<Unit> =

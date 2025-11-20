@@ -13,11 +13,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        val appComponent = (application as AvitoApplication).appComponent
         val isAuthorized = FirebaseAuth.getInstance().currentUser != null
 
         setContent {
             AvitoTestTheme {
-                RootAppScreen(isAuthorized = isAuthorized)
+                RootAppScreen(
+                    isAuthorized = isAuthorized,
+                    appComponent = appComponent
+                )
             }
         }
     }
