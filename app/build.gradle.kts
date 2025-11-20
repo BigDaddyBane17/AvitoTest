@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.firebase)
 }
 
+
+
 android {
     namespace = "com.avito.avitotest"
     compileSdk = 36
@@ -41,6 +43,9 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
@@ -65,6 +70,7 @@ dependencies {
     implementation(libs.bundles.coroutines)
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
+    implementation(libs.aws.android.sdk.s3.v2220)
     implementation(libs.lottie)
     implementation(libs.lottie.compose)
     androidTestImplementation(platform(libs.firebase.bom))

@@ -1,5 +1,6 @@
 [versions]
 agp = "8.10.0"
+aws-android-sdk-s3 = "2.22.0"
 kotlin = "2.2.20"
 ksp = "2.2.20-2.0.4"
 google-service = "4.4.4"
@@ -19,9 +20,11 @@ junit = "4.13.2"
 junit-version = "1.3.0"
 espresso-core = "3.7.0"
 amazon = "2.81.1"
+amazon-sdk = "1.12.767"
 appcompat = "1.7.1"
 material = "1.13.0"
 play-services-auth = "21.2.0"
+coil = "2.6.0"
 
 
 [libraries]
@@ -31,6 +34,7 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 
+aws-android-sdk-s3-v2220 = { module = "com.amazonaws:aws-android-sdk-s3", version.ref = "aws-android-sdk-s3" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
@@ -56,6 +60,7 @@ firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 firebase-storage = { module = "com.google.firebase:firebase-storage" }
 
 amazon-s3 = { module = "com.amazonaws:aws-android-sdk-s3", version.ref = "amazon"}
+aws-java-sdk-s3 = { module = "com.amazonaws:aws-java-sdk-s3", version.ref = "amazon-sdk" }
 
 lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }
@@ -65,6 +70,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "play-services-auth" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 
 [bundles]
 compose-base = [

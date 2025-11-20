@@ -1,5 +1,8 @@
 package com.avito.firebase.auth
 
+import android.net.Uri
+import android.util.Log
+import com.avito.firebase.storage.S3StorageDataSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -8,7 +11,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class FirebaseAuthRepository @Inject constructor(
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val storageDataSource: S3StorageDataSource
 ) : AuthRepository {
 
     override suspend fun signIn(email: String, password: String): Result<Unit> =
@@ -44,10 +48,54 @@ class FirebaseAuthRepository @Inject constructor(
             }
         }.map { }
 
+    override suspend fun updateDisplayName(name: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                Log.d(TAG, "Updating display name for user=${auth.currentUser?.uid}")
+                val request = UserProfileChangeRequest.Builder()
+                    .setDisplayName(name)
+                    .build()
+                auth.currentUser?.updateProfile(request)?.await()
+            }
+        }.map { }
+
+    override suspend fun updatePhoto(uri: Uri): Result<Uri> =
+        runCatching {
+            val user = auth.currentUser ?: error("User not authorized")
+            Log.d(TAG, "Uploading photo for user=${user.uid}, source=$uri")
+            val uploadedUri = storageDataSource.uploadFile(uri, "profiles/${user.uid}")
+            withContext(Dispatchers.IO) {
+                val request = UserProfileChangeRequest.Builder()
+                    .setPhotoUri(uploadedUri)
+                    .build()
+                user.updateProfile(request).await()
+                user.reload().await()
+                Log.d(TAG, "Photo updated for user=${user.uid}, newUri=$uploadedUri")
+            }
+            uploadedUri
+        }.onFailure {
+            Log.e(TAG, "Failed to update photo", it)
+        }
+
+    override fun currentUserInfo(): AuthUserInfo? =
+        auth.currentUser?.let { user ->
+            AuthUserInfo(
+                uid = user.uid,
+                displayName = user.displayName,
+                email = user.email,
+                phone = user.phoneNumber,
+                photoUri = user.photoUrl
+            )
+        }
+
     override fun isAuthorized(): Boolean = auth.currentUser != null
 
     override fun signOut() {
         auth.signOut()
+    }
+
+    companion object {
+        private const val TAG = "FirebaseAuthRepo"
     }
 }
 
