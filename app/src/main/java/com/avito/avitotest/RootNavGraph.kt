@@ -35,7 +35,7 @@ fun RootNavGraph(
         addAuthGraph(navController, appComponent, googleWebClientId)
         addBookListGraph(navController)
         addUploadBookGraph(navController)
-        addProfileGraph(navController)
+        addProfileGraph(navController, appComponent)
     }
 }
 
@@ -92,11 +92,13 @@ private fun NavGraphBuilder.addUploadBookGraph(
 
 private fun NavGraphBuilder.addProfileGraph(
     navController: NavHostController,
+    appComponent: AppComponent,
 ) {
     navigation<ScreenRoute.Profile>(
         startDestination = ProfileRoute
     ) {
         profileScreen(
+            profileComponentFactory = appComponent.profileComponentFactory(),
             onLogout = {
                 navController.navigate(ScreenRoute.Auth) {
                     popUpTo<ScreenRoute.Auth> {

@@ -12,6 +12,7 @@ import com.avito.bookupload.di.BookUploadFeatureModule
 import com.avito.di.AppScope
 import com.avito.firebase.di.AuthRepositoryModule
 import com.avito.firebase.di.FirebaseModule
+import com.avito.firebase.di.StorageModule
 import com.avito.profile.di.ProfileComponent
 import com.avito.profile.di.ProfileFeatureModule
 import dagger.BindsInstance
@@ -23,6 +24,7 @@ import dagger.Component
         AppModule::class,
         FirebaseModule::class,
         AuthRepositoryModule::class,
+        StorageModule::class,
         AuthFeatureModule::class,
         BooksListFeatureModule::class,
         BookReaderFeatureModule::class,

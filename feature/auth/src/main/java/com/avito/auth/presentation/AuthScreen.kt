@@ -82,7 +82,7 @@ fun AuthScreen(
         } catch (e: ApiException) {
             val message = when (result.resultCode) {
                 Activity.RESULT_CANCELED -> "Вход через Google отменён"
-                else -> e.localizedMessage ?: "Не удалось выполнить вход через Google"
+                else -> e.message ?: "Не удалось выполнить вход через Google"
             }
             viewModel.onIntent(AuthIntent.GoogleSignInFailed(message))
         }
