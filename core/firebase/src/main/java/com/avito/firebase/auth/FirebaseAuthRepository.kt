@@ -1,12 +1,14 @@
 package com.avito.firebase.auth
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class FirebaseAuthRepository(
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+class FirebaseAuthRepository @Inject constructor(
+    private val auth: FirebaseAuth
 ) : AuthRepository {
 
     override suspend fun signIn(email: String, password: String): Result<Unit> =
@@ -31,6 +33,14 @@ class FirebaseAuthRepository(
         runCatching {
             withContext(Dispatchers.IO) {
                 auth.sendPasswordResetEmail(email).await()
+            }
+        }.map { }
+
+    override suspend fun signInWithGoogle(idToken: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                val credential = GoogleAuthProvider.getCredential(idToken, null)
+                auth.signInWithCredential(credential).await()
             }
         }.map { }
 

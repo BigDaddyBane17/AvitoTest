@@ -34,6 +34,7 @@ dependencies {
     implementation(project(":core:firebase"))
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose.base)
+    implementation(libs.play.services.auth)
     implementation(libs.bundles.firebase)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.navigation.compose)

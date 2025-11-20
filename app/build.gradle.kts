@@ -44,12 +44,12 @@ android {
 }
 
 dependencies {
-    // core
     implementation(project(":core:common"))
     implementation(project(":core:database"))
     implementation(project(":core:firebase"))
     implementation(project(":core:navigation"))
     implementation(project(":core:ui"))
+    implementation(project(":core:di"))
     implementation(project(":feature:auth"))
     implementation(project(":feature:booksList"))
     implementation(project(":feature:bookReader"))
@@ -67,6 +67,10 @@ dependencies {
     ksp(libs.dagger.compiler)
     implementation(libs.lottie)
     implementation(libs.lottie.compose)
+    androidTestImplementation(platform(libs.firebase.bom))
+    androidTestImplementation(libs.firebase.auth)
+    androidTestImplementation(libs.firebase.firestore)
+    androidTestImplementation(libs.firebase.storage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

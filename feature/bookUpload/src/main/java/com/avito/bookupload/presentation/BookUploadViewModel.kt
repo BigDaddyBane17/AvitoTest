@@ -1,4 +1,6 @@
 package com.avito.bookupload.presentation
 
-class BookUploadViewModel {}
+import androidx.lifecycle.ViewModel
+import javax.inject.Inject
 
+class BookUploadViewModel @Inject constructor() : ViewModel()

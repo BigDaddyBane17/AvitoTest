@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
+import com.avito.avitotest.di.AppComponent
 import com.avito.auth.navigation.AuthRoute
 import com.avito.auth.navigation.authScreen
 import com.avito.bookreader.navigation.BookReaderRoute
@@ -22,6 +23,8 @@ import com.avito.profile.navigation.profileScreen
 fun RootNavGraph(
     navController: NavHostController,
     startDestination: ScreenRoute,
+    appComponent: AppComponent,
+    googleWebClientId: String,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
@@ -29,7 +32,7 @@ fun RootNavGraph(
         startDestination = startDestination,
         modifier = modifier
     ) {
-        addAuthGraph(navController)
+        addAuthGraph(navController, appComponent, googleWebClientId)
         addBookListGraph(navController)
         addUploadBookGraph(navController)
         addProfileGraph(navController)
@@ -39,11 +42,15 @@ fun RootNavGraph(
 
 private fun NavGraphBuilder.addAuthGraph(
     navController: NavHostController,
+    appComponent: AppComponent,
+    googleWebClientId: String,
 ) {
     navigation<ScreenRoute.Auth>(
         startDestination = AuthRoute,
     ) {
         authScreen(
+            authComponentFactory = appComponent.authComponentFactory(),
+            webClientId = googleWebClientId,
             onAuthSuccess = {
                 navController.navigate(ScreenRoute.BookList) {
                     popUpTo<ScreenRoute.Auth> {
