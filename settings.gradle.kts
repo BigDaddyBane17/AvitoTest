@@ -31,4 +31,5 @@ include(":feature:auth")
 include(":feature:profile")
 include(":feature:booksList")
 include(":feature:bookReader")
-include(":feature:bookDownload")
+
+include(":feature:bookUpload")

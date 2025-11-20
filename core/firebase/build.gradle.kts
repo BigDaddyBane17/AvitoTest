@@ -27,6 +27,7 @@ dependencies {
     implementation(libs.bundles.coroutines)
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
+    implementation(libs.amazon.s3)
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
     testImplementation(libs.junit)

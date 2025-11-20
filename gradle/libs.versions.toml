@@ -18,6 +18,9 @@ firebase-bom = "34.6.0"
 junit = "4.13.2"
 junit-version = "1.3.0"
 espresso-core = "3.7.0"
+amazon = "2.81.1"
+appcompat = "1.7.1"
+material = "1.13.0"
 
 
 [libraries]
@@ -51,11 +54,15 @@ firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 firebase-storage = { module = "com.google.firebase:firebase-storage" }
 
+amazon-s3 = { module = "com.amazonaws:aws-android-sdk-s3", version.ref = "amazon"}
+
 lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit-version" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [bundles]
 compose-base = [
@@ -92,3 +99,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 firebase = { id = "com.google.gms.google-services", version.ref = "google-service"}
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }  # <-- НОВОЕ
