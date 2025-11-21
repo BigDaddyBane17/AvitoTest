@@ -2,6 +2,7 @@ package com.avito.firebase.auth
 
 import android.net.Uri
 import android.util.Log
+import com.avito.firebase.common.await
 import com.avito.firebase.storage.S3StorageDataSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider

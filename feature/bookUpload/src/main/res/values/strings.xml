@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="book_upload_title">Загрузка книги</string>
+    <string name="book_upload_title_hint">Название книги</string>
+    <string name="book_upload_author_hint">Автор</string>
+    <string name="book_upload_pick_file">Выбрать файл</string>
+    <string name="book_upload_upload">Загрузить</string>
+    <string name="book_upload_upload_another">Загрузить ещё одну книгу</string>
+    <string name="book_upload_uploading">Идёт загрузка...</string>
+    <string name="book_upload_retry">Повторить</string>
+    <string name="book_upload_hide">Скрыть</string>
+    <string name="book_upload_file_size">%1$d КБ</string>
+    <string name="book_upload_supported_formats">Поддерживаются файлы .pdf, .epub и .txt</string>
+</resources>
+

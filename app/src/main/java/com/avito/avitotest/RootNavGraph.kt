@@ -34,7 +34,7 @@ fun RootNavGraph(
     ) {
         addAuthGraph(navController, appComponent, googleWebClientId)
         addBookListGraph(navController)
-        addUploadBookGraph(navController)
+        addUploadBookGraph(navController, appComponent)
         addProfileGraph(navController, appComponent)
     }
 }
@@ -81,11 +81,19 @@ private fun NavGraphBuilder.addBookListGraph(
 
 private fun NavGraphBuilder.addUploadBookGraph(
     navController: NavHostController,
+    appComponent: AppComponent,
 ) {
     navigation<ScreenRoute.UploadBook>(
         startDestination = BookUploadRoute
     ) {
-        bookUploadScreen()
+        bookUploadScreen(
+            bookUploadComponentFactory = appComponent.bookUploadComponentFactory(),
+            onUploadCompleted = {
+                navController.navigate(ScreenRoute.BookList) {
+                    popUpTo<ScreenRoute.BookList> { inclusive = false }
+                }
+            }
+        )
     }
 }
 
