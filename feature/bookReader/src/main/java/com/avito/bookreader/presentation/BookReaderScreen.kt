@@ -40,9 +40,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.avito.bookreader.di.BookReaderComponent
-import com.avito.bookreader.domain.FontSize
-import com.avito.bookreader.domain.LineSpacing
-import com.avito.bookreader.domain.ReadingTheme
+import com.avito.common.reader.FontSize
+import com.avito.common.reader.LineSpacing
+import com.avito.common.reader.ReadingTheme
 
 @Composable
 fun BookReaderScreen(

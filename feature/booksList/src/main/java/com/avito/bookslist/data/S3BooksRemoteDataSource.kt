@@ -3,7 +3,7 @@ package com.avito.bookslist.data
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.GetObjectRequest
 import com.amazonaws.services.s3.model.ListObjectsRequest
-import com.avito.firebase.auth.AuthRepository
+import com.avito.firebase.auth.domain.repository.AuthRepository
 import com.avito.firebase.storage.model.S3Config
 import com.avito.firebase.storage.model.S3BookMetadata
 import java.io.BufferedReader

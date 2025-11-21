@@ -1,9 +1,9 @@
 package com.avito.bookreader.domain.usecase
 
 import com.avito.bookreader.data.ReadingPreferencesManager
-import com.avito.bookreader.domain.FontSize
-import com.avito.bookreader.domain.LineSpacing
-import com.avito.bookreader.domain.ReadingTheme
+import com.avito.common.reader.FontSize
+import com.avito.common.reader.LineSpacing
+import com.avito.common.reader.ReadingTheme
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 

@@ -1,10 +1,12 @@
-package com.avito.firebase.auth
+package com.avito.firebase.auth.domain.repository
+
+import android.net.Uri
+import com.avito.firebase.auth.domain.model.AuthUserInfo
 
 /**
  * Abstraction over authentication provider so feature modules do not depend
  * on concrete Firebase classes.
  */
-import android.net.Uri
 
 interface AuthRepository {
     suspend fun signIn(email: String, password: String): Result<Unit>
@@ -17,4 +19,3 @@ interface AuthRepository {
     fun isAuthorized(): Boolean
     fun signOut()
 }
-

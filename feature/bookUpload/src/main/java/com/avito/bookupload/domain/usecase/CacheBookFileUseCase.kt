@@ -1,7 +1,7 @@
 package com.avito.bookupload.domain.usecase
 
 import android.net.Uri
-import com.avito.bookupload.domain.BookUploadFileManager
+import com.avito.bookupload.data.BookUploadFileManager
 import javax.inject.Inject
 
 class CacheBookFileUseCase @Inject constructor(

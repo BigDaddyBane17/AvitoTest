@@ -1,8 +1,10 @@
-package com.avito.firebase.auth
+package com.avito.firebase.auth.data.repository
 
 import android.net.Uri
 import android.util.Log
-import com.avito.firebase.common.await
+import com.avito.firebase.auth.domain.model.AuthUserInfo
+import com.avito.firebase.auth.domain.repository.AuthRepository
+import com.avito.common.firebase.await
 import com.avito.firebase.storage.S3StorageDataSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -99,4 +101,3 @@ class FirebaseAuthRepository @Inject constructor(
         private const val TAG = "FirebaseAuthRepo"
     }
 }
-

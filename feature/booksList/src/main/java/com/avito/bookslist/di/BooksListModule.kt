@@ -4,10 +4,10 @@ import android.content.Context
 import com.amazonaws.services.s3.AmazonS3
 import com.avito.bookslist.data.DownloadedBooksRepositoryImpl
 import com.avito.bookslist.data.S3BooksRemoteDataSource
-import com.avito.bookslist.domain.BooksFileStorage
-import com.avito.bookslist.domain.DownloadedBooksRepository
-import com.avito.database.BooksLocalDataSource
-import com.avito.firebase.auth.AuthRepository
+import com.avito.bookslist.domain.storage.BooksFileStorage
+import com.avito.bookslist.domain.repository.DownloadedBooksRepository
+import com.avito.database.source.BooksLocalDataSource
+import com.avito.firebase.auth.domain.repository.AuthRepository
 import com.avito.firebase.storage.model.S3Config
 import dagger.Module
 import dagger.Provides

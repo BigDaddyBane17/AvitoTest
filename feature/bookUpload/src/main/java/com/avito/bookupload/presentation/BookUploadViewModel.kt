@@ -1,5 +1,6 @@
 package com.avito.bookupload.presentation
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.Constraints
@@ -9,8 +10,10 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.avito.bookupload.domain.BookUploadFileManager
 import com.avito.bookupload.domain.BookUploadValidator
+import com.avito.bookupload.domain.FormValidation
+import com.avito.bookupload.domain.usecase.CacheBookFileUseCase
+import com.avito.bookupload.domain.usecase.ValidateBookUploadUseCase
 import com.avito.bookupload.work.BookUploadWorker
 import java.util.UUID
 import javax.inject.Inject
@@ -23,8 +26,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class BookUploadViewModel @Inject constructor(
-    private val fileManager: BookUploadFileManager,
-    private val validator: BookUploadValidator,
+    private val cacheBookFileUseCase: CacheBookFileUseCase,
+    private val validateBookUploadUseCase: ValidateBookUploadUseCase,
     private val workManager: WorkManager
 ) : ViewModel() {
 
@@ -59,9 +62,9 @@ class BookUploadViewModel @Inject constructor(
     private fun cacheFile(uri: android.net.Uri) {
         val current = editableState()
         viewModelScope.launch {
-            runCatching { fileManager.cache(uri) }
+            runCatching { cacheBookFileUseCase(uri) }
                 .onSuccess { cached ->
-                    if (!validator.isFileSupported(cached.displayName, cached.mimeType)) {
+                    if (!validateBookUploadUseCase.isFileSupported(cached.displayName, cached.mimeType)) {
                         _uiState.value = BookUploadUiState.Error(
                             title = current.title,
                             author = current.author,
@@ -106,13 +109,13 @@ class BookUploadViewModel @Inject constructor(
             ?: (_uiState.value as? BookUploadUiState.Error)?.toIdle()
             ?: return
 
-        when (val validation = validator.validateForm(current.title, current.author, current.cachedFilePath)) {
-            is BookUploadValidator.FormValidation.Invalid -> {
+        when (val validation = validateBookUploadUseCase.validateForm(current.title, current.author, current.cachedFilePath)) {
+            is FormValidation.Invalid -> {
                 _uiState.value = current.copy(errorMessage = validation.reason)
                 return
             }
 
-            BookUploadValidator.FormValidation.Valid -> Unit
+            FormValidation.Valid -> Unit
         }
 
         val cachedPath = current.cachedFilePath ?: return
@@ -180,21 +183,21 @@ class BookUploadViewModel @Inject constructor(
     }
 
     private fun handleSuccess(info: WorkInfo) {
-        val uploadingState = (_uiState.value as? BookUploadUiState.Uploading) ?: editableState()
+        val snapshot = (_uiState.value as? BookUploadUiState.Uploading)?.snapshot()
+            ?: editableState().snapshot()
         val fileUrl = info.outputData.getString(BookUploadWorker.KEY_OUTPUT_FILE_URL).orEmpty()
         val localPath = info.outputData.getString(BookUploadWorker.KEY_OUTPUT_LOCAL_PATH)
 
         _uiState.value = BookUploadUiState.Success(
-            title = uploadingState.title,
-            author = uploadingState.author,
-            selectedFileName = uploadingState.selectedFileName,
-            selectedFileUri = uploadingState.selectedFileUri,
-            cachedFilePath = uploadingState.cachedFilePath,
-            mimeType = uploadingState.mimeType,
-            fileSizeBytes = uploadingState.fileSizeBytes,
+            title = snapshot.title,
+            author = snapshot.author,
+            selectedFileName = snapshot.selectedFileName,
+            selectedFileUri = snapshot.selectedFileUri,
+            cachedFilePath = snapshot.cachedFilePath,
+            mimeType = snapshot.mimeType,
+            fileSizeBytes = snapshot.fileSizeBytes,
             fileUrl = fileUrl,
-            localPath = localPath,
-            infoMessage = "Книга успешно загружена"
+            localPath = localPath
         )
         progressJob?.cancel()
     }
@@ -236,8 +239,8 @@ class BookUploadViewModel @Inject constructor(
     private fun dismissMessages() {
         when (val state = _uiState.value) {
             is BookUploadUiState.Idle -> _uiState.value = state.copy(infoMessage = null, errorMessage = null)
-            is BookUploadUiState.Success -> _uiState.value = state.copy(infoMessage = null)
-            is BookUploadUiState.Error -> _uiState.value = state.copy(errorMessage = null)
+            is BookUploadUiState.Success -> _uiState.value = state.copy(infoMessage = null, errorMessage = null)
+            is BookUploadUiState.Error -> _uiState.value = state.copy(infoMessage = null, errorMessage = null)
             else -> Unit
         }
     }
@@ -285,4 +288,56 @@ class BookUploadViewModel @Inject constructor(
             mimeType = mimeType,
             fileSizeBytes = fileSizeBytes
         )
+
+    private fun BookUploadUiState.snapshot(): UploadSnapshot = when (this) {
+        is BookUploadUiState.Idle -> UploadSnapshot(
+            title = title,
+            author = author,
+            selectedFileName = selectedFileName,
+            selectedFileUri = selectedFileUri,
+            cachedFilePath = cachedFilePath,
+            mimeType = mimeType,
+            fileSizeBytes = fileSizeBytes
+        )
+
+        is BookUploadUiState.Uploading -> UploadSnapshot(
+            title = title,
+            author = author,
+            selectedFileName = selectedFileName,
+            selectedFileUri = selectedFileUri,
+            cachedFilePath = cachedFilePath,
+            mimeType = mimeType,
+            fileSizeBytes = fileSizeBytes
+        )
+
+        is BookUploadUiState.Success -> UploadSnapshot(
+            title = title,
+            author = author,
+            selectedFileName = selectedFileName,
+            selectedFileUri = selectedFileUri,
+            cachedFilePath = cachedFilePath,
+            mimeType = mimeType,
+            fileSizeBytes = fileSizeBytes
+        )
+
+        is BookUploadUiState.Error -> UploadSnapshot(
+            title = title,
+            author = author,
+            selectedFileName = selectedFileName,
+            selectedFileUri = selectedFileUri,
+            cachedFilePath = cachedFilePath,
+            mimeType = mimeType,
+            fileSizeBytes = fileSizeBytes
+        )
+    }
+
+    private data class UploadSnapshot(
+        val title: String,
+        val author: String,
+        val selectedFileName: String?,
+        val selectedFileUri: Uri?,
+        val cachedFilePath: String?,
+        val mimeType: String?,
+        val fileSizeBytes: Long?
+    )
 }

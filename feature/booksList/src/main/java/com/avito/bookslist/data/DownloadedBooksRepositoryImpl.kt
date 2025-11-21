@@ -1,10 +1,10 @@
 package com.avito.bookslist.data
 
-import com.avito.bookslist.domain.DownloadedBooksRepository
-import com.avito.bookslist.domain.LocalBook
+import com.avito.bookslist.domain.repository.DownloadedBooksRepository
+import com.avito.bookslist.domain.model.LocalBook
 import com.avito.bookslist.di.BooksListScope
-import com.avito.bookslist.domain.BooksFileStorage
-import com.avito.database.BooksLocalDataSource
+import com.avito.bookslist.domain.storage.BooksFileStorage
+import com.avito.database.source.BooksLocalDataSource
 import com.avito.database.model.BookEntity
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers

@@ -1,7 +1,7 @@
 package com.avito.profile.domain.usecase
 
 import android.net.Uri
-import com.avito.firebase.auth.AuthRepository
+import com.avito.firebase.auth.domain.repository.AuthRepository
 import javax.inject.Inject
 
 class UpdatePhotoUseCase @Inject constructor(

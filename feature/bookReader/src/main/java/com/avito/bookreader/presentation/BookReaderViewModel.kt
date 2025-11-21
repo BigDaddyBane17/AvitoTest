@@ -3,9 +3,9 @@ package com.avito.bookreader.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avito.bookreader.di.BookId
-import com.avito.bookreader.domain.FontSize
-import com.avito.bookreader.domain.LineSpacing
-import com.avito.bookreader.domain.ReadingTheme
+import com.avito.common.reader.FontSize
+import com.avito.common.reader.LineSpacing
+import com.avito.common.reader.ReadingTheme
 import com.avito.bookreader.domain.usecase.DeleteLocalBookUseCase
 import com.avito.bookreader.domain.usecase.GetReadingProgressUseCase
 import com.avito.bookreader.domain.usecase.LoadBookUseCase

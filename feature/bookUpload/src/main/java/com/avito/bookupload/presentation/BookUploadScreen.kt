@@ -127,15 +127,19 @@ private fun UploadForm(
     onReset: () -> Unit,
     onDismissMessage: () -> Unit,
 ) {
-    val titleValue = state.title
-    val authorValue = state.author
-    val selectedFile = state.selectedFileName
-    val fileSize = state.fileSizeBytes
-    val isUploading = state.isUploading
-    val canUpload = state.cachedFilePath != null && !isUploading
-    val progressValue = state.progress / 100f
+    val titleValue = state.titleValue
+    val authorValue = state.authorValue
+    val selectedFile = state.selectedFileNameValue
+    val fileSize = state.fileSizeValue
+    val isUploading = state is BookUploadUiState.Uploading
+    val canUpload = state.cachedFilePathValue != null && !isUploading
+    val progressFraction = state.progressValue / 100f
+    val errorMessage = state.errorMessageValue
+    val infoMessage = state.infoMessageValue
+    val showRetry = state is BookUploadUiState.Error
+    val showSuccessAnimation = state is BookUploadUiState.Success
     val animatedProgress = androidx.compose.animation.core.animateFloatAsState(
-        targetValue = progressValue,
+        targetValue = progressFraction,
         label = "book-upload-progress"
     )
 
@@ -207,22 +211,22 @@ private fun UploadForm(
             }
         }
 
-        if (state.errorMessage != null) {
+        if (errorMessage != null) {
             ErrorCard(
-                message = state.errorMessage ?: "",
+                message = errorMessage,
                 onRetry = onRetry,
-                showRetry = state.showRetry
+                showRetry = showRetry
             )
         }
 
-        if (state.infoMessage != null && state.infoMessage?.isNotBlank() == true) {
+        if (!infoMessage.isNullOrBlank()) {
             InfoCard(
-                message = state.infoMessage ?: "",
+                message = infoMessage,
                 onDismiss = onDismissMessage
             )
         }
 
-        AnimatedVisibility(visible = state.showSuccessAnimation) {
+        AnimatedVisibility(visible = showSuccessAnimation) {
             SuccessAnimation()
         }
 
@@ -375,3 +379,67 @@ private fun SuccessAnimation() {
         )
     }
 }
+
+private val BookUploadUiState.titleValue: String
+    get() = when (this) {
+        is BookUploadUiState.Idle -> title
+        is BookUploadUiState.Uploading -> title
+        is BookUploadUiState.Success -> title
+        is BookUploadUiState.Error -> title
+    }
+
+private val BookUploadUiState.authorValue: String
+    get() = when (this) {
+        is BookUploadUiState.Idle -> author
+        is BookUploadUiState.Uploading -> author
+        is BookUploadUiState.Success -> author
+        is BookUploadUiState.Error -> author
+    }
+
+private val BookUploadUiState.selectedFileNameValue: String?
+    get() = when (this) {
+        is BookUploadUiState.Idle -> selectedFileName
+        is BookUploadUiState.Uploading -> selectedFileName
+        is BookUploadUiState.Success -> selectedFileName
+        is BookUploadUiState.Error -> selectedFileName
+    }
+
+private val BookUploadUiState.fileSizeValue: Long?
+    get() = when (this) {
+        is BookUploadUiState.Idle -> fileSizeBytes
+        is BookUploadUiState.Uploading -> fileSizeBytes
+        is BookUploadUiState.Success -> fileSizeBytes
+        is BookUploadUiState.Error -> fileSizeBytes
+    }
+
+private val BookUploadUiState.cachedFilePathValue: String?
+    get() = when (this) {
+        is BookUploadUiState.Idle -> cachedFilePath
+        is BookUploadUiState.Uploading -> cachedFilePath
+        is BookUploadUiState.Success -> cachedFilePath
+        is BookUploadUiState.Error -> cachedFilePath
+    }
+
+private val BookUploadUiState.infoMessageValue: String?
+    get() = when (this) {
+        is BookUploadUiState.Idle -> infoMessage
+        is BookUploadUiState.Uploading -> infoMessage
+        is BookUploadUiState.Success -> infoMessage
+        is BookUploadUiState.Error -> infoMessage
+    }
+
+private val BookUploadUiState.errorMessageValue: String?
+    get() = when (this) {
+        is BookUploadUiState.Idle -> errorMessage
+        is BookUploadUiState.Uploading -> errorMessage
+        is BookUploadUiState.Success -> errorMessage
+        is BookUploadUiState.Error -> errorMessage
+    }
+
+private val BookUploadUiState.progressValue: Int
+    get() = when (this) {
+        is BookUploadUiState.Idle -> progress
+        is BookUploadUiState.Uploading -> progress
+        is BookUploadUiState.Success -> progress
+        is BookUploadUiState.Error -> progress
+    }

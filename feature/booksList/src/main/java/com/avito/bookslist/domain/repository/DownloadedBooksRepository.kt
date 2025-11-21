@@ -1,5 +1,6 @@
-package com.avito.bookslist.domain
+package com.avito.bookslist.domain.repository
 
+import com.avito.bookslist.domain.model.LocalBook
 import kotlinx.coroutines.flow.Flow
 
 interface DownloadedBooksRepository {
@@ -8,5 +9,3 @@ interface DownloadedBooksRepository {
     suspend fun downloadBook(bookId: String): Result<Unit>
     suspend fun deleteBook(bookId: String): Result<Unit>
 }
-
-

@@ -2,7 +2,7 @@ package com.avito.bookupload.di
 
 import android.content.Context
 import androidx.work.WorkManager
-import com.avito.bookupload.domain.BookUploadFileManager
+import com.avito.bookupload.data.BookUploadFileManager
 import com.avito.bookupload.domain.BookUploadValidator
 import dagger.Module
 import dagger.Provides

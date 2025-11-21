@@ -1,10 +1,10 @@
-package com.avito.database
+package com.avito.database.source
 
 import com.avito.database.dao.BookDao
 import com.avito.database.model.BookEntity
 import com.avito.di.AppScope
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
 @AppScope
 class BooksLocalDataSource @Inject constructor(
@@ -29,10 +29,4 @@ class BooksLocalDataSource @Inject constructor(
         dao.updateLocalPath(id, path)
     }
 
-    suspend fun updateSortOrder(ids: List<String>) {
-        ids.forEachIndexed { index, id ->
-            dao.updateSortOrder(id, index)
-        }
-    }
 }
-

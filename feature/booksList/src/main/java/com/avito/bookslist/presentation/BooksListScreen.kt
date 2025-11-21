@@ -59,7 +59,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.avito.bookslist.di.BooksListComponent
-import com.avito.bookslist.domain.LocalBook
+import com.avito.bookslist.domain.model.LocalBook
 import com.avito.feature.bookslist.R
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState

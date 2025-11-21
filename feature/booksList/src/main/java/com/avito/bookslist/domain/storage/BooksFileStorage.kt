@@ -1,4 +1,4 @@
-package com.avito.bookslist.domain
+package com.avito.bookslist.domain.storage
 
 import android.content.Context
 import com.avito.bookslist.di.BooksListScope
@@ -22,5 +22,3 @@ class BooksFileStorage @Inject constructor(
         private const val LIBRARY_DIR = "books_library"
     }
 }
-
-

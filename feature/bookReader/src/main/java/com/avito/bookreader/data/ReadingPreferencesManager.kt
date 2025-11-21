@@ -3,9 +3,9 @@ package com.avito.bookreader.data
 import android.content.Context
 import android.content.SharedPreferences
 import com.avito.bookreader.di.BookReaderScope
-import com.avito.bookreader.domain.FontSize
-import com.avito.bookreader.domain.LineSpacing
-import com.avito.bookreader.domain.ReadingTheme
+import com.avito.common.reader.FontSize
+import com.avito.common.reader.LineSpacing
+import com.avito.common.reader.ReadingTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

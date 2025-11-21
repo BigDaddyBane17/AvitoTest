@@ -1,4 +1,4 @@
-package com.avito.database
+package com.avito.database.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -13,5 +13,3 @@ import com.avito.database.model.BookEntity
 abstract class BooksDatabase : RoomDatabase() {
     abstract fun bookDao(): BookDao
 }
-
-
