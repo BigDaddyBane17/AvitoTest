@@ -19,7 +19,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -161,13 +163,19 @@ private fun AuthForm(
             }
 
             if (!isSignIn) {
-                OutlinedTextField(
+                TextField(
                     value = state.name,
                     onValueChange = { onIntent(AuthIntent.NameChanged(it)) },
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("Имя") },
                     enabled = !state.isLoading,
                     singleLine = true,
+                    shape = MaterialTheme.shapes.large,
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                    ),
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Words,
                         imeAction = ImeAction.Next
@@ -175,20 +183,26 @@ private fun AuthForm(
                 )
             }
 
-            OutlinedTextField(
+            TextField(
                 value = state.email,
                 onValueChange = { onIntent(AuthIntent.EmailChanged(it)) },
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("Email") },
                 enabled = !state.isLoading,
                 singleLine = true,
+                shape = MaterialTheme.shapes.large,
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                ),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next
                 )
             )
 
-            OutlinedTextField(
+            TextField(
                 value = state.password,
                 onValueChange = { onIntent(AuthIntent.PasswordChanged(it)) },
                 modifier = Modifier.fillMaxWidth(),
@@ -205,6 +219,12 @@ private fun AuthForm(
                 },
                 enabled = !state.isLoading,
                 singleLine = true,
+                shape = MaterialTheme.shapes.large,
+                colors = TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                ),
                 visualTransformation = if (state.isPasswordVisible) {
                     VisualTransformation.None
                 } else {
@@ -220,13 +240,19 @@ private fun AuthForm(
             )
 
             if (!isSignIn) {
-                OutlinedTextField(
+                TextField(
                     value = state.confirmPassword,
                     onValueChange = { onIntent(AuthIntent.ConfirmPasswordChanged(it)) },
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("Повторите пароль") },
                     enabled = !state.isLoading,
                     singleLine = true,
+                    shape = MaterialTheme.shapes.large,
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                    ),
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,

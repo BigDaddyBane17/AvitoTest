@@ -1,8 +1,11 @@
 [versions]
+accompanist-swiperefresh = "0.36.0"
 agp = "8.10.0"
 aws-android-sdk-s3 = "2.22.0"
+burnoutcrew-reorderable = "0.9.6"
 guava = "33.2.1-android"
 kotlin = "2.2.20"
+kotlinx-serialization = "1.7.3"
 ksp = "2.2.20-2.0.4"
 google-service = "4.4.4"
 
@@ -16,6 +19,7 @@ coroutines = "1.10.2"
 room = "2.8.1"
 dagger = "2.57.2"
 lottie = "6.7.1"
+accompanist = "0.34.0"
 firebase-bom = "34.6.0"
 junit = "4.13.2"
 junit-version = "1.3.0"
@@ -30,12 +34,14 @@ work = "2.9.1"
 
 
 [libraries]
+accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist-swiperefresh" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 aws-android-sdk-s3-v2220 = { module = "com.amazonaws:aws-android-sdk-s3", version.ref = "aws-android-sdk-s3" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 compose-ui = { module = "androidx.compose.ui:ui" }
@@ -43,7 +49,9 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-material = { module = "androidx.compose.material:material" }
 
+composereorderable-reorderable = { module = "org.burnoutcrew.composereorderable:reorderable", version.ref = "burnoutcrew-reorderable" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 
@@ -74,6 +82,8 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "play-services-auth" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 
 [bundles]

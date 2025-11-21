@@ -9,16 +9,20 @@ import com.amazonaws.ClientConfiguration
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.AmazonS3Client
 import com.avito.core.firebase.BuildConfig
-import com.avito.firebase.common.await
 import com.avito.firebase.storage.S3Config
 import com.avito.firebase.storage.S3StorageDataSource
+import com.avito.firebase.storage.model.S3BookMetadata
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.UUID
 
 class BookUploadWorker(
     appContext: Context,
@@ -39,35 +43,51 @@ class BookUploadWorker(
         val currentUser = FirebaseAuth.getInstance().currentUser
             ?: return Result.failure(workDataOf(KEY_ERROR to "Пользователь не авторизован"))
 
+        val json = Json { encodeDefaults = true }
+        val progressScope = CoroutineScope(coroutineContext)
+
         return runCatching {
             val cachedFile = File(filePath)
             if (!cachedFile.exists()) throw IllegalStateException("Файл недоступен")
 
             val storageDataSource = createStorageDataSource()
+            val bookId = UUID.randomUUID().toString()
+            val filesPrefix = "books/${currentUser.uid}/files"
+            val extension = cachedFile.extension.ifBlank {
+                mimeType.substringAfterLast('/', "bin")
+            }
+            val customKey = "$filesPrefix/$bookId.$extension"
             val uploadUri = storageDataSource.uploadFile(
                 uri = cachedFile.toUri(),
-                pathPrefix = "books/${currentUser.uid}"
-            ) { progress ->
-                val percent = (progress * 100).toInt()
-                setProgressAsync(
-                    workDataOf(KEY_PROGRESS to percent)
-                )
-            }
-
-            val metadata = mapOf(
-                "title" to title,
-                "author" to author,
-                "fileUrl" to uploadUri.toString(),
-                "userId" to currentUser.uid,
-                "fileName" to originalName,
-                "mimeType" to mimeType,
-                "uploadedAt" to System.currentTimeMillis()
+                pathPrefix = filesPrefix,
+                onProgress = { progress ->
+                    val percent = (progress * 100).toInt()
+                    progressScope.launch {
+                        setProgress(
+                            workDataOf(KEY_PROGRESS to percent)
+                        )
+                    }
+                },
+                customKey = customKey
             )
 
-            FirebaseFirestore.getInstance()
-                .collection(BOOKS_COLLECTION)
-                .add(metadata)
-                .await()
+            val metadata = S3BookMetadata(
+                id = bookId,
+                title = title,
+                author = author,
+                fileKey = customKey,
+                fileUrl = uploadUri.toString(),
+                fileName = originalName,
+                mimeType = mimeType,
+                fileSizeBytes = cachedFile.length(),
+                uploadedAt = System.currentTimeMillis()
+            )
+
+            val metaKey = "books/${currentUser.uid}/meta/$bookId.json"
+            storageDataSource.uploadJson(
+                key = metaKey,
+                payload = json.encodeToString(metadata)
+            )
 
             val localCopy = persistLocally(cachedFile, originalName)
 
@@ -136,7 +156,6 @@ class BookUploadWorker(
         const val KEY_OUTPUT_AUTHOR = "book_upload_author"
         const val KEY_OUTPUT_LOCAL_PATH = "book_upload_local_path"
 
-        private const val BOOKS_COLLECTION = "books"
         private const val LOCAL_LIBRARY_DIR = "books_library"
     }
 }

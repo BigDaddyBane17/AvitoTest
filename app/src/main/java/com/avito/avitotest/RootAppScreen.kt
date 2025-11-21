@@ -1,9 +1,16 @@
 package com.avito.avitotest
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -34,18 +41,32 @@ fun RootAppScreen(
     val isAuthDestination = currentDestination
         ?.hierarchy
         ?.any { it.hasRoute(ScreenRoute.Auth::class) } == true
+    
+    val isBookReaderDestination = currentDestination?.route?.contains("BookReaderRoute") == true
+    
+    var onSettingsClick by remember { mutableStateOf<(() -> Unit)?>(null) }
 
     Scaffold(
         topBar = {
             if (!isAuthDestination) {
                 TopAppBar(
                     navController = navController,
-                    currentDestination = currentDestination
+                    currentDestination = currentDestination,
+                    actions = {
+                        if (isBookReaderDestination && onSettingsClick != null) {
+                            IconButton(onClick = { onSettingsClick?.invoke() }) {
+                                Icon(
+                                    imageVector = Icons.Default.Settings,
+                                    contentDescription = "Настройки"
+                                )
+                            }
+                        }
+                    }
                 )
             }
         },
         bottomBar = {
-            if (!isAuthDestination) {
+            if (!isAuthDestination && !isBookReaderDestination) {
                 BottomNavigationBar(
                     navController = navController,
                     currentDestination = currentDestination
@@ -60,6 +81,9 @@ fun RootAppScreen(
             appComponent = appComponent,
             googleWebClientId = webClientId,
             modifier = Modifier.padding(padding),
+            onSettingsClickChanged = { callback -> 
+                onSettingsClick = callback
+            }
         )
     }
 }

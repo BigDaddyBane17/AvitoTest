@@ -1,5 +1,6 @@
 package com.avito.navigation
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -20,7 +21,8 @@ import com.avito.core.navigation.R
 @Composable
 fun TopAppBar(
     navController: NavController,
-    currentDestination: NavDestination?
+    currentDestination: NavDestination?,
+    actions: @Composable RowScope.() -> Unit = {}
 ) {
     val titleRes = when {
         currentDestination.inHierarchy(typeRoute<ScreenRoute.BookList>()) ->
@@ -51,10 +53,12 @@ fun TopAppBar(
             }
         },
         title = { Text(stringResource(titleRes)) },
+        actions = actions,
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
             titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
         )
     )
 }

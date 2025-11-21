@@ -1,5 +1,6 @@
 package com.avito.bookreader.di
 
+import dagger.BindsInstance
 import dagger.Subcomponent
 
 @BookReaderScope
@@ -15,7 +16,8 @@ interface BookReaderComponent {
 
     @Subcomponent.Factory
     interface Factory {
-        fun create(): BookReaderComponent
+        fun create(
+            @BindsInstance @BookId bookId: String
+        ): BookReaderComponent
     }
 }
-
