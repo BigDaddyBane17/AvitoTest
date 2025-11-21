@@ -3,10 +3,10 @@ package com.avito.bookreader.data
 import android.content.Context
 import android.content.SharedPreferences
 import com.avito.bookreader.di.BookReaderScope
-import com.avito.bookreader.domain.BookContent
-import com.avito.bookreader.domain.BookFormat
-import com.avito.bookreader.domain.BookReaderRepository
-import com.avito.database.BooksLocalDataSource
+import com.avito.bookreader.domain.model.BookContent
+import com.avito.bookreader.domain.model.BookFormat
+import com.avito.bookreader.domain.repository.BookReaderRepository
+import com.avito.database.source.BooksLocalDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -71,8 +71,7 @@ class BookReaderRepositoryImpl @Inject constructor(
                     file.delete()
                 }
             }
-            // Удаляем localPath из базы данных
-            localDataSource.updateLocalPath(bookId, null)
+            localDataSource.deleteBook(bookId)
         }
     }
 

@@ -1,8 +1,8 @@
 package com.avito.bookreader.presentation
 
-import com.avito.bookreader.domain.FontSize
-import com.avito.bookreader.domain.LineSpacing
-import com.avito.bookreader.domain.ReadingTheme
+import com.avito.common.reader.FontSize
+import com.avito.common.reader.LineSpacing
+import com.avito.common.reader.ReadingTheme
 
 sealed interface BookReaderIntent {
     data object ToggleSettings : BookReaderIntent

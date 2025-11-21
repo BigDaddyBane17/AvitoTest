@@ -1,4 +1,4 @@
-package com.avito.bookslist.domain
+package com.avito.bookslist.domain.model
 
 data class LocalBook(
     val id: String,
@@ -15,5 +15,3 @@ data class LocalBook(
 ) {
     val isDownloaded: Boolean get() = !localPath.isNullOrBlank()
 }
-
-

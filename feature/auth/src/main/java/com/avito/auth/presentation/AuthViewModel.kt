@@ -3,7 +3,10 @@ package com.avito.auth.presentation
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avito.firebase.auth.AuthRepository
+import com.avito.auth.domain.usecase.SendPasswordResetUseCase
+import com.avito.auth.domain.usecase.SignInUseCase
+import com.avito.auth.domain.usecase.SignInWithGoogleUseCase
+import com.avito.auth.domain.usecase.SignUpUseCase
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -14,7 +17,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val signInUseCase: SignInUseCase,
+    private val signUpUseCase: SignUpUseCase,
+    private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
+    private val sendPasswordResetUseCase: SendPasswordResetUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Content())
@@ -50,8 +56,8 @@ class AuthViewModel @Inject constructor(
                     infoMessage = null
                 )
             }
-            AuthIntent.TogglePasswordVisibility -> updateContent { it.copy(isPasswordVisible = !it.isPasswordVisible) }
-            AuthIntent.ToggleMode -> {
+            is AuthIntent.TogglePasswordVisibility -> updateContent { it.copy(isPasswordVisible = !it.isPasswordVisible) }
+            is AuthIntent.ToggleMode -> {
                 if (isLoading()) return
                 updateContent {
                     val nextMode = if (it.mode == AuthMode.SignIn) AuthMode.SignUp else AuthMode.SignIn
@@ -64,9 +70,9 @@ class AuthViewModel @Inject constructor(
                     )
                 }
             }
-            AuthIntent.Submit -> submit()
-            AuthIntent.ForgotPassword -> sendReset()
-            AuthIntent.DismissMessage -> updateContent { it.copy(errorMessage = null, infoMessage = null) }
+            is AuthIntent.Submit -> submit()
+            is AuthIntent.ForgotPassword -> sendReset()
+            is AuthIntent.DismissMessage -> updateContent { it.copy(errorMessage = null, infoMessage = null) }
             is AuthIntent.GoogleSignInToken -> signInWithGoogle(intent.idToken)
             is AuthIntent.GoogleSignInFailed -> updateContent {
                 it.copy(
@@ -98,9 +104,9 @@ class AuthViewModel @Inject constructor(
             val email = current.email.trim()
             val password = current.password
             val result = if (current.mode == AuthMode.SignIn) {
-                authRepository.signIn(email, password)
+                signInUseCase(email, password)
             } else {
-                authRepository.signUp(current.name.trim(), email, password)
+                signUpUseCase(current.name.trim(), email, password)
             }
 
             result
@@ -127,7 +133,7 @@ class AuthViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            val result = authRepository.signInWithGoogle(idToken.trim())
+            val result = signInWithGoogleUseCase(idToken.trim())
             result
                 .onSuccess { _uiState.value = AuthUiState.Success }
                 .onFailure { error ->
@@ -158,7 +164,7 @@ class AuthViewModel @Inject constructor(
         ).withValidation()
 
         viewModelScope.launch {
-            val result = authRepository.sendPasswordReset(email)
+            val result = sendPasswordResetUseCase(email)
             result.onSuccess {
                 updateContent {
                     it.copy(

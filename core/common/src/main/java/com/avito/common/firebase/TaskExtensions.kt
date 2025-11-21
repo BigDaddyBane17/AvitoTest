@@ -1,4 +1,4 @@
-package com.avito.firebase.common
+package com.avito.common.firebase
 
 import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.suspendCancellableCoroutine

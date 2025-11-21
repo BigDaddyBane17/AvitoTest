@@ -1,10 +1,10 @@
 package com.avito.bookslist.data
 
-import com.avito.bookslist.domain.DownloadedBooksRepository
-import com.avito.bookslist.domain.LocalBook
+import com.avito.bookslist.domain.repository.DownloadedBooksRepository
+import com.avito.bookslist.domain.model.LocalBook
 import com.avito.bookslist.di.BooksListScope
-import com.avito.bookslist.domain.BooksFileStorage
-import com.avito.database.BooksLocalDataSource
+import com.avito.bookslist.domain.storage.BooksFileStorage
+import com.avito.database.source.BooksLocalDataSource
 import com.avito.database.model.BookEntity
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -76,14 +76,9 @@ class DownloadedBooksRepositoryImpl @Inject constructor(
         entity.localPath?.let { path ->
             runCatching { java.io.File(path).takeIf { it.exists() }?.delete() }
         }
-        localDataSource.updateLocalPath(bookId, null)
+        localDataSource.deleteBook(bookId)
         return@withContext Result.success(Unit)
     }
-
-    override suspend fun reorderBooks(bookIds: List<String>) =
-        withContext(Dispatchers.IO) {
-            localDataSource.updateSortOrder(bookIds)
-        }
 
     private fun BookEntity.toDomain(): LocalBook = LocalBook(
         id = id,

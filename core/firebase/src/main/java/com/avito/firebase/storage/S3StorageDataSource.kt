@@ -13,6 +13,7 @@ import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectRequest
+import com.avito.firebase.storage.model.S3Config
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -141,16 +142,13 @@ class S3StorageDataSource @Inject constructor(
     private fun ContentResolver.openStreamWithLength(uri: Uri): Pair<InputStream, Long?> {
         return try {
             val descriptor = openAssetFileDescriptor(uri, "r")
-            if (descriptor != null) {
-                descriptor.use {
-                    val input = it.createInputStream()
-                    input to it.length.takeIf { length -> length > 0 }
-                }
-            } else {
-                openInputStream(uri)?.let { stream ->
-                    stream to resolveFileSize(uri)
-                } ?: throw IllegalStateException("Не удалось открыть выбранный файл")
+            descriptor?.use {
+                val input = it.createInputStream()
+                input to it.length.takeIf { length -> length > 0 }
             }
+                ?: (openInputStream(uri)?.let { stream ->
+                    stream to resolveFileSize(uri)
+                } ?: throw IllegalStateException("Не удалось открыть выбранный файл"))
         } catch (error: Exception) {
             Log.e(TAG, "Failed to open descriptor for $uri", error)
             openInputStream(uri)?.let { stream ->

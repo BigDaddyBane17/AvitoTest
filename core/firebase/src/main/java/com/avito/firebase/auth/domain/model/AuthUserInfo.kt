@@ -1,4 +1,4 @@
-package com.avito.firebase.auth
+package com.avito.firebase.auth.domain.model
 
 import android.net.Uri
 
@@ -9,4 +9,3 @@ data class AuthUserInfo(
     val phone: String?,
     val photoUri: Uri?
 )
-

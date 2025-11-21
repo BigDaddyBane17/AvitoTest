@@ -40,9 +40,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.avito.bookreader.di.BookReaderComponent
-import com.avito.bookreader.domain.FontSize
-import com.avito.bookreader.domain.LineSpacing
-import com.avito.bookreader.domain.ReadingTheme
+import com.avito.common.reader.FontSize
+import com.avito.common.reader.LineSpacing
+import com.avito.common.reader.ReadingTheme
 
 @Composable
 fun BookReaderScreen(
@@ -76,7 +76,6 @@ fun BookReaderScreen(
         BookReaderUiState.Loading -> LoadingState(modifier = modifier)
         is BookReaderUiState.Error -> ErrorState(
             message = state.message,
-            bookId = bookId,
             onRetry = { viewModel.onIntent(BookReaderIntent.Retry) },
             onDelete = { viewModel.onIntent(BookReaderIntent.DeleteBook) },
             modifier = modifier
@@ -125,26 +124,26 @@ private fun ContentState(
             modifier = Modifier.fillMaxSize(),
             containerColor = backgroundColor,
             bottomBar = {
-            Column {
-                LinearProgressIndicator(
-                    progress = state.readingProgress / 100f,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(backgroundColor)
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Прочитано: ${state.readingProgress.toInt()}%",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = textColor
+                Column {
+                    LinearProgressIndicator(
+                        progress = state.readingProgress / 100f,
+                        modifier = Modifier.fillMaxWidth()
                     )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(backgroundColor)
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Прочитано: ${state.readingProgress.toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = textColor
+                        )
+                    }
                 }
             }
-        }
         ) { padding ->
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(
@@ -281,7 +280,6 @@ private fun LoadingState(modifier: Modifier = Modifier) {
 @Composable
 private fun ErrorState(
     message: String,
-    bookId: String,
     onRetry: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier

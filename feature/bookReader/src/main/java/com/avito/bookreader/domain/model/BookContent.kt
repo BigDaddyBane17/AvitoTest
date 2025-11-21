@@ -1,4 +1,4 @@
-package com.avito.bookreader.domain
+package com.avito.bookreader.domain.model
 
 data class BookContent(
     val id: String,

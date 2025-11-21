@@ -3,8 +3,8 @@ package com.avito.bookreader.di
 import android.content.Context
 import com.avito.bookreader.data.BookReaderRepositoryImpl
 import com.avito.bookreader.data.ReadingPreferencesManager
-import com.avito.bookreader.domain.BookReaderRepository
-import com.avito.database.BooksLocalDataSource
+import com.avito.bookreader.domain.repository.BookReaderRepository
+import com.avito.database.source.BooksLocalDataSource
 import dagger.Module
 import dagger.Provides
 

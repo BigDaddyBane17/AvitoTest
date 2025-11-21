@@ -4,7 +4,10 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avito.firebase.auth.AuthRepository
+import com.avito.profile.domain.usecase.GetProfileInfoUseCase
+import com.avito.profile.domain.usecase.LogoutUseCase
+import com.avito.profile.domain.usecase.UpdateDisplayNameUseCase
+import com.avito.profile.domain.usecase.UpdatePhotoUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +15,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ProfileViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val getProfileInfoUseCase: GetProfileInfoUseCase,
+    private val updateDisplayNameUseCase: UpdateDisplayNameUseCase,
+    private val updatePhotoUseCase: UpdatePhotoUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Loading)
@@ -46,7 +52,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun refreshUser() {
-        val user = authRepository.currentUserInfo()
+        val user = getProfileInfoUseCase()
         _uiState.value = ProfileUiState.Content(
             displayName = user?.displayName.orEmpty(),
             email = user?.email.orEmpty(),
@@ -65,7 +71,7 @@ class ProfileViewModel @Inject constructor(
 
         viewModelScope.launch {
             updateContent { it.copy(isSaving = true) }
-            authRepository.updateDisplayName(name)
+            updateDisplayNameUseCase(name)
                 .onSuccess {
                     Log.d(TAG, "Display name updated")
                     refreshUser()
@@ -92,7 +98,7 @@ class ProfileViewModel @Inject constructor(
     private fun uploadPhoto(uri: Uri) {
         viewModelScope.launch {
             updateContent { it.copy(isSaving = true) }
-            authRepository.updatePhoto(uri)
+            updatePhotoUseCase(uri)
                 .onSuccess {
                     Log.d(TAG, "Photo upload success: $it")
                     refreshUser()
@@ -116,7 +122,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun logout() {
-        authRepository.signOut()
+        logoutUseCase()
         Log.d(TAG, "User signed out")
         when (val current = _uiState.value) {
             is ProfileUiState.Content -> _uiState.value = current.copy(message = LOGOUT_MESSAGE)

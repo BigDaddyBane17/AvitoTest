@@ -1,10 +1,10 @@
-package com.avito.database
+package com.avito.database.source
 
 import com.avito.database.dao.BookDao
 import com.avito.database.model.BookEntity
 import com.avito.di.AppScope
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
 @AppScope
 class BooksLocalDataSource @Inject constructor(
@@ -21,14 +21,12 @@ class BooksLocalDataSource @Inject constructor(
         dao.upsertBooks(books)
     }
 
+    suspend fun deleteBook(id: String) {
+        dao.deleteBook(id)
+    }
+
     suspend fun updateLocalPath(id: String, path: String?) {
         dao.updateLocalPath(id, path)
     }
 
-    suspend fun updateSortOrder(ids: List<String>) {
-        ids.forEachIndexed { index, id ->
-            dao.updateSortOrder(id, index)
-        }
-    }
 }
-

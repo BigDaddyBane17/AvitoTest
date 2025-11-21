@@ -45,7 +45,6 @@ dependencies {
     implementation(libs.lottie.compose)
     api(libs.serialization.json)
     implementation(libs.accompanist.swiperefresh)
-    implementation(libs.composereorderable.reorderable)
     implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.amazon.s3)

@@ -4,7 +4,7 @@ import android.content.Context
 import com.amazonaws.ClientConfiguration
 import com.avito.core.firebase.BuildConfig
 import com.avito.di.AppScope
-import com.avito.firebase.storage.S3Config
+import com.avito.firebase.storage.model.S3Config
 import com.avito.firebase.storage.S3StorageDataSource
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.AmazonS3

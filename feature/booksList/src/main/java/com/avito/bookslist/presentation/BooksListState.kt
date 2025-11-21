@@ -1,6 +1,6 @@
 package com.avito.bookslist.presentation
 
-import com.avito.bookslist.domain.LocalBook
+import com.avito.bookslist.domain.model.LocalBook
 
 sealed interface BooksListUiState {
     data object Loading : BooksListUiState

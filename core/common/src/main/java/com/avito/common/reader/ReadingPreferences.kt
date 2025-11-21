@@ -1,4 +1,4 @@
-package com.avito.bookreader.domain
+package com.avito.common.reader
 
 enum class FontSize(val scale: Float) {
     SMALL(0.85f),

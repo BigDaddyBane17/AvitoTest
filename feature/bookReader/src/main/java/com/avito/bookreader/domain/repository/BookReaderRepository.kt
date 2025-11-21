@@ -1,4 +1,6 @@
-package com.avito.bookreader.domain
+package com.avito.bookreader.domain.repository
+
+import com.avito.bookreader.domain.model.BookContent
 
 interface BookReaderRepository {
     suspend fun loadBook(bookId: String): Result<BookContent>
@@ -6,4 +8,3 @@ interface BookReaderRepository {
     suspend fun getReadingProgress(bookId: String): Int
     suspend fun deleteBook(bookId: String)
 }
-

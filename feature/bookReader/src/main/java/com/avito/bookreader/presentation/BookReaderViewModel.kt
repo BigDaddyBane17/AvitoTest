@@ -2,12 +2,15 @@ package com.avito.bookreader.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avito.bookreader.data.ReadingPreferencesManager
 import com.avito.bookreader.di.BookId
-import com.avito.bookreader.domain.BookReaderRepository
-import com.avito.bookreader.domain.FontSize
-import com.avito.bookreader.domain.LineSpacing
-import com.avito.bookreader.domain.ReadingTheme
+import com.avito.common.reader.FontSize
+import com.avito.common.reader.LineSpacing
+import com.avito.common.reader.ReadingTheme
+import com.avito.bookreader.domain.usecase.DeleteLocalBookUseCase
+import com.avito.bookreader.domain.usecase.GetReadingProgressUseCase
+import com.avito.bookreader.domain.usecase.LoadBookUseCase
+import com.avito.bookreader.domain.usecase.ReadingPreferencesUseCase
+import com.avito.bookreader.domain.usecase.SaveReadingProgressUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,8 +19,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class BookReaderViewModel @Inject constructor(
-    private val repository: BookReaderRepository,
-    private val preferencesManager: ReadingPreferencesManager,
+    private val loadBookUseCase: LoadBookUseCase,
+    private val saveReadingProgressUseCase: SaveReadingProgressUseCase,
+    private val getReadingProgressUseCase: GetReadingProgressUseCase,
+    private val deleteLocalBookUseCase: DeleteLocalBookUseCase,
+    private val readingPreferencesUseCase: ReadingPreferencesUseCase,
     @BookId private val bookId: String
 ) : ViewModel() {
 
@@ -41,25 +47,17 @@ class BookReaderViewModel @Inject constructor(
         }
     }
 
-    private fun deleteBook() {
-        viewModelScope.launch {
-            repository.deleteBook(bookId)
-            // После удаления показываем состояние ошибки, что книга удалена
-            _uiState.value = BookReaderUiState.Error("Книга удалена")
-        }
-    }
-
     private fun loadBook() {
         viewModelScope.launch {
             _uiState.value = BookReaderUiState.Loading
-            repository.loadBook(bookId)
+            loadBookUseCase(bookId)
                 .onSuccess { book ->
-                    val savedPosition = repository.getReadingProgress(bookId)
+                    val savedPosition = getReadingProgressUseCase(bookId)
                     _uiState.value = BookReaderUiState.Content(
                         book = book,
-                        fontSize = preferencesManager.fontSize.value,
-                        lineSpacing = preferencesManager.lineSpacing.value,
-                        theme = preferencesManager.theme.value,
+                        fontSize = readingPreferencesUseCase.fontSize.value,
+                        lineSpacing = readingPreferencesUseCase.lineSpacing.value,
+                        theme = readingPreferencesUseCase.theme.value,
                         scrollPosition = savedPosition
                     )
                 }
@@ -73,17 +71,17 @@ class BookReaderViewModel @Inject constructor(
 
     private fun observePreferences() {
         viewModelScope.launch {
-            preferencesManager.fontSize.collectLatest { fontSize ->
+            readingPreferencesUseCase.fontSize.collectLatest { fontSize ->
                 updateContent { it.copy(fontSize = fontSize) }
             }
         }
         viewModelScope.launch {
-            preferencesManager.lineSpacing.collectLatest { spacing ->
+            readingPreferencesUseCase.lineSpacing.collectLatest { spacing ->
                 updateContent { it.copy(lineSpacing = spacing) }
             }
         }
         viewModelScope.launch {
-            preferencesManager.theme.collectLatest { theme ->
+            readingPreferencesUseCase.theme.collectLatest { theme ->
                 updateContent { it.copy(theme = theme) }
             }
         }
@@ -94,15 +92,15 @@ class BookReaderViewModel @Inject constructor(
     }
 
     private fun changeFontSize(size: FontSize) {
-        preferencesManager.setFontSize(size)
+        readingPreferencesUseCase.setFontSize(size)
     }
 
     private fun changeLineSpacing(spacing: LineSpacing) {
-        preferencesManager.setLineSpacing(spacing)
+        readingPreferencesUseCase.setLineSpacing(spacing)
     }
 
     private fun changeTheme(theme: ReadingTheme) {
-        preferencesManager.setTheme(theme)
+        readingPreferencesUseCase.setTheme(theme)
     }
 
     private fun updateScrollPosition(position: Int, maxPosition: Int) {
@@ -117,7 +115,14 @@ class BookReaderViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            repository.saveReadingProgress(bookId, position)
+            saveReadingProgressUseCase(bookId, position)
+        }
+    }
+
+    private fun deleteBook() {
+        viewModelScope.launch {
+            deleteLocalBookUseCase(bookId)
+            _uiState.value = BookReaderUiState.Error("Книга удалена")
         }
     }
 

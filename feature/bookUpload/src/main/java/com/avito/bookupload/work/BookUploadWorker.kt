@@ -9,7 +9,7 @@ import com.amazonaws.ClientConfiguration
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.AmazonS3Client
 import com.avito.core.firebase.BuildConfig
-import com.avito.firebase.storage.S3Config
+import com.avito.firebase.storage.model.S3Config
 import com.avito.firebase.storage.S3StorageDataSource
 import com.avito.firebase.storage.model.S3BookMetadata
 import com.google.firebase.auth.FirebaseAuth
