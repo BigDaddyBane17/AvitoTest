@@ -68,6 +68,7 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.navigation.compose)
     implementation(libs.bundles.coroutines)
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
     implementation(libs.aws.android.sdk.s3.v2220)

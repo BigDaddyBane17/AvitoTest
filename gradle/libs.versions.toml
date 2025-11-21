@@ -1,6 +1,7 @@
 [versions]
 agp = "8.10.0"
 aws-android-sdk-s3 = "2.22.0"
+guava = "33.2.1-android"
 kotlin = "2.2.20"
 ksp = "2.2.20-2.0.4"
 google-service = "4.4.4"
@@ -25,6 +26,7 @@ appcompat = "1.7.1"
 material = "1.13.0"
 play-services-auth = "21.2.0"
 coil = "2.6.0"
+work = "2.9.1"
 
 
 [libraries]
@@ -42,6 +44,7 @@ compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview"
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
 compose-material3 = { module = "androidx.compose.material3:material3" }
 
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -71,6 +74,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "play-services-auth" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 
 [bundles]
 compose-base = [
