@@ -7,7 +7,6 @@ interface DownloadedBooksRepository {
     suspend fun syncRemote(force: Boolean = false): Result<Unit>
     suspend fun downloadBook(bookId: String): Result<Unit>
     suspend fun deleteBook(bookId: String): Result<Unit>
-    suspend fun reorderBooks(bookIds: List<String>)
 }
 
 

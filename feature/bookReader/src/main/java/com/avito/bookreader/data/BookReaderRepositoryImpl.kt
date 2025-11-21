@@ -71,8 +71,7 @@ class BookReaderRepositoryImpl @Inject constructor(
                     file.delete()
                 }
             }
-            // Удаляем localPath из базы данных
-            localDataSource.updateLocalPath(bookId, null)
+            localDataSource.deleteBook(bookId)
         }
     }
 

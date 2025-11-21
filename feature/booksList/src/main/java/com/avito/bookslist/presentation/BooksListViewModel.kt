@@ -2,7 +2,10 @@ package com.avito.bookslist.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avito.bookslist.domain.DownloadedBooksRepository
+import com.avito.bookslist.domain.usecase.DeleteBookUseCase
+import com.avito.bookslist.domain.usecase.DownloadBookUseCase
+import com.avito.bookslist.domain.usecase.ObserveBooksUseCase
+import com.avito.bookslist.domain.usecase.SyncBooksUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +14,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class BooksListViewModel @Inject constructor(
-    private val repository: DownloadedBooksRepository
+    private val observeBooksUseCase: ObserveBooksUseCase,
+    private val syncBooksUseCase: SyncBooksUseCase,
+    private val downloadBookUseCase: DownloadBookUseCase,
+    private val deleteBookUseCase: DeleteBookUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<BooksListUiState>(BooksListUiState.Loading)
@@ -29,7 +35,6 @@ class BooksListViewModel @Inject constructor(
             is BooksListIntent.Delete -> delete(intent.bookId)
             BooksListIntent.Retry -> refresh(forceRemote = true)
             BooksListIntent.PullToRefresh -> refresh(forceRemote = true)
-            is BooksListIntent.ItemMoved -> handleManualMove(intent.fromIndex, intent.toIndex)
             is BooksListIntent.SortModeChanged -> updateSortMode(intent.sortMode)
             BooksListIntent.ToastShown -> clearToast()
             is BooksListIntent.BookClicked -> Unit
@@ -38,7 +43,7 @@ class BooksListViewModel @Inject constructor(
 
     private fun observeBooks() {
         viewModelScope.launch {
-            repository.booksFlow.collectLatest { books ->
+            observeBooksUseCase().collectLatest { books ->
                 val currentQuery = (uiState.value as? BooksListUiState.Content)?.searchQuery.orEmpty()
                 val currentSort = (uiState.value as? BooksListUiState.Content)?.sortMode ?: SortMode.Manual
                 val isRefreshing = (uiState.value as? BooksListUiState.Content)?.isRefreshing ?: false
@@ -62,7 +67,7 @@ class BooksListViewModel @Inject constructor(
             } else {
                 _uiState.value = BooksListUiState.Loading
             }
-            repository.syncRemote(forceRemote)
+            syncBooksUseCase(forceRemote)
                 .onFailure { error ->
                     val hasContent = (_uiState.value as? BooksListUiState.Content)
                         ?.books
@@ -87,7 +92,7 @@ class BooksListViewModel @Inject constructor(
 
     private fun download(bookId: String) {
         viewModelScope.launch {
-            repository.downloadBook(bookId)
+            downloadBookUseCase(bookId)
                 .onSuccess { showToast("Книга загружена") }
                 .onFailure { error -> showToast(error.message ?: "Не удалось скачать книгу") }
         }
@@ -95,23 +100,9 @@ class BooksListViewModel @Inject constructor(
 
     private fun delete(bookId: String) {
         viewModelScope.launch {
-            repository.deleteBook(bookId)
+            deleteBookUseCase(bookId)
                 .onSuccess { showToast("Файл удалён") }
                 .onFailure { error -> showToast(error.message ?: "Не удалось удалить файл") }
-        }
-    }
-
-    private fun handleManualMove(from: Int, to: Int) {
-        val content = _uiState.value as? BooksListUiState.Content ?: return
-        if (content.sortMode != SortMode.Manual) return
-        val mutable = content.books.toMutableList()
-        if (from !in mutable.indices || to !in mutable.indices) return
-        val item = mutable.removeAt(from)
-        mutable.add(to, item)
-        val reordered = mutable.mapIndexed { index, book -> book.copy(sortOrder = index) }
-        _uiState.value = content.copy(books = reordered)
-        viewModelScope.launch {
-            repository.reorderBooks(reordered.map { it.id })
         }
     }
 

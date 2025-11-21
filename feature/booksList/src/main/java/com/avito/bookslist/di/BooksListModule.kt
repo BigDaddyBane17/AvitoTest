@@ -8,7 +8,7 @@ import com.avito.bookslist.domain.BooksFileStorage
 import com.avito.bookslist.domain.DownloadedBooksRepository
 import com.avito.database.BooksLocalDataSource
 import com.avito.firebase.auth.AuthRepository
-import com.avito.firebase.storage.S3Config
+import com.avito.firebase.storage.model.S3Config
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.json.Json

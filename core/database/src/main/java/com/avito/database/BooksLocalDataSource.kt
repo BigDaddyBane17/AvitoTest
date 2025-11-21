@@ -21,6 +21,10 @@ class BooksLocalDataSource @Inject constructor(
         dao.upsertBooks(books)
     }
 
+    suspend fun deleteBook(id: String) {
+        dao.deleteBook(id)
+    }
+
     suspend fun updateLocalPath(id: String, path: String?) {
         dao.updateLocalPath(id, path)
     }

@@ -1,4 +1,4 @@
-package com.avito.firebase.storage
+package com.avito.firebase.storage.model
 
 data class S3Config(
     val endpoint: String,
@@ -8,4 +8,3 @@ data class S3Config(
     val secretKey: String,
     val publicBaseUrl: String
 )
-

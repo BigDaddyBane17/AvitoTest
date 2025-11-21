@@ -76,14 +76,9 @@ class DownloadedBooksRepositoryImpl @Inject constructor(
         entity.localPath?.let { path ->
             runCatching { java.io.File(path).takeIf { it.exists() }?.delete() }
         }
-        localDataSource.updateLocalPath(bookId, null)
+        localDataSource.deleteBook(bookId)
         return@withContext Result.success(Unit)
     }
-
-    override suspend fun reorderBooks(bookIds: List<String>) =
-        withContext(Dispatchers.IO) {
-            localDataSource.updateSortOrder(bookIds)
-        }
 
     private fun BookEntity.toDomain(): LocalBook = LocalBook(
         id = id,
