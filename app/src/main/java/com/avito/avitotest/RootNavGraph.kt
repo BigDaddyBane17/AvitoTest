@@ -26,6 +26,7 @@ fun RootNavGraph(
     appComponent: AppComponent,
     googleWebClientId: String,
     modifier: Modifier = Modifier,
+    onSettingsClickChanged: ((() -> Unit)?) -> Unit = {}
 ) {
     NavHost(
         navController = navController,
@@ -33,7 +34,7 @@ fun RootNavGraph(
         modifier = modifier
     ) {
         addAuthGraph(navController, appComponent, googleWebClientId)
-        addBookListGraph(navController)
+        addBookListGraph(navController, appComponent, onSettingsClickChanged)
         addUploadBookGraph(navController, appComponent)
         addProfileGraph(navController, appComponent)
     }
@@ -65,16 +66,22 @@ private fun NavGraphBuilder.addAuthGraph(
 
 private fun NavGraphBuilder.addBookListGraph(
     navController: NavHostController,
+    appComponent: AppComponent,
+    onSettingsClickChanged: ((() -> Unit)?) -> Unit
 ) {
     navigation<ScreenRoute.BookList>(
         startDestination = BooksListRoute
     ) {
         booksListScreen(
+            booksListComponentFactory = appComponent.booksListComponentFactory(),
             onBookClick = { bookId ->
-                navController.navigate(BookReaderRoute)
+                navController.navigate(BookReaderRoute(bookId))
             }
         )
-        bookReaderScreen()
+        bookReaderScreen(
+            bookReaderComponentFactory = appComponent.bookReaderComponentFactory(),
+            onSettingsClickChanged = onSettingsClickChanged
+        )
     }
 }
 

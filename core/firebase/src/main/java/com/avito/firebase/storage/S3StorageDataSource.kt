@@ -30,13 +30,14 @@ class S3StorageDataSource @Inject constructor(
     suspend fun uploadFile(
         uri: Uri,
         pathPrefix: String,
-        onProgress: (Float) -> Unit = {}
+        onProgress: (Float) -> Unit = {},
+        customKey: String? = null
     ): Uri = withContext(Dispatchers.IO) {
         val mimeType = context.contentResolver.getType(uri) ?: "application/octet-stream"
         val extension = MimeTypeMap.getSingleton()
             .getExtensionFromMimeType(mimeType)
             ?: mimeType.substringAfter('/', "bin")
-        val key = "$pathPrefix/${UUID.randomUUID()}.$extension"
+        val key = customKey ?: "$pathPrefix/${UUID.randomUUID()}.$extension"
 
         val localFile = uri.toFileOrNull()
         if (localFile != null && localFile.exists()) {
@@ -46,6 +47,7 @@ class S3StorageDataSource @Inject constructor(
         val (inputStream, length) = context.contentResolver.openStreamWithLength(uri)
 
         val repeatableStream = if (!inputStream.markSupported()) {
+            inputStream.close()
             Log.d(TAG, "Creating temp file for non-repeatable stream, key=$key")
             val tempFile = copyStreamToTempFile(uri, extension)
             return@withContext uploadLocalFile(tempFile, key, mimeType, onProgress, deleteAfterUpload = true)
@@ -111,6 +113,29 @@ class S3StorageDataSource @Inject constructor(
         val url = "${config.publicBaseUrl.trimEnd('/')}/$key"
         Log.d(TAG, "Upload success key=$key (local file) URL=$url")
         return url.toUri()
+    }
+
+    suspend fun uploadJson(
+        key: String,
+        payload: String,
+        isPublic: Boolean = false
+    ) = withContext(Dispatchers.IO) {
+        val bytes = payload.toByteArray()
+        val metadata = ObjectMetadata().apply {
+            contentType = "application/json"
+            contentLength = bytes.size.toLong()
+        }
+        val request = PutObjectRequest(
+            config.bucket,
+            key,
+            bytes.inputStream(),
+            metadata
+        ).apply {
+            if (isPublic) {
+                withCannedAcl(CannedAccessControlList.PublicRead)
+            }
+        }
+        amazonS3.putObject(request)
     }
 
     private fun ContentResolver.openStreamWithLength(uri: Uri): Pair<InputStream, Long?> {

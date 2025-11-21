@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 
@@ -51,6 +52,7 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.bundles.coroutines)
+    implementation(libs.serialization.json)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)

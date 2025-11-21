@@ -18,7 +18,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -105,13 +106,19 @@ fun ProfileScreen(
                     )
 
                     if (state.isEditing) {
-                        OutlinedTextField(
+                        TextField(
                             value = state.displayName,
                             onValueChange = { viewModel.onIntent(ProfileIntent.DisplayNameChanged(it)) },
                             modifier = Modifier.fillMaxWidth(),
                             label = { Text(stringResource(id = R.string.profile_edit)) },
                             singleLine = true,
-                            enabled = !state.isSaving
+                            enabled = !state.isSaving,
+                            shape = MaterialTheme.shapes.large,
+                            colors = TextFieldDefaults.colors(
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                            )
                         )
                     } else {
                         Text(

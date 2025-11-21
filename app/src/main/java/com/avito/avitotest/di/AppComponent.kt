@@ -9,6 +9,7 @@ import com.avito.bookslist.di.BooksListComponent
 import com.avito.bookslist.di.BooksListFeatureModule
 import com.avito.bookupload.di.BookUploadComponent
 import com.avito.bookupload.di.BookUploadFeatureModule
+import com.avito.database.di.DatabaseModule
 import com.avito.di.AppScope
 import com.avito.firebase.di.AuthRepositoryModule
 import com.avito.firebase.di.FirebaseModule
@@ -25,6 +26,7 @@ import dagger.Component
         FirebaseModule::class,
         AuthRepositoryModule::class,
         StorageModule::class,
+        DatabaseModule::class,
         AuthFeatureModule::class,
         BooksListFeatureModule::class,
         BookReaderFeatureModule::class,
