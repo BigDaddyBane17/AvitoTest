@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -36,27 +37,21 @@ fun BooksListScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
+    // Устанавливаем TopBarConfig сразу при входе на экран
+    LaunchedEffect(Unit) {
+        val initialConfig = TopBarConfig(
+            title = "Мои книги"
+        )
+        onTopBarConfigChange(initialConfig)
+        viewModel.onIntent(BooksListIntent.Refresh)
+    }
+
     val toastMessage = (uiState as? BooksListUiState.Content)?.toastMessage
     LaunchedEffect(toastMessage) {
         if (!toastMessage.isNullOrBlank()) {
             Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
             viewModel.onIntent(BooksListIntent.ToastShown)
         }
-    }
-
-    LaunchedEffect(uiState) {
-        val config = when (uiState) {
-            is BooksListUiState.Content -> TopBarConfig(
-                title = "Мои книги",
-                search = TopBarSearchConfig(
-                    value = (uiState as BooksListUiState.Content).searchQuery,
-                    onValueChange = { query -> viewModel.onIntent(BooksListIntent.QueryChanged(query)) },
-                    placeholder = "Поиск книг…"
-                )
-            )
-            else -> TopBarConfig(title = "Мои книги")
-        }
-        onTopBarConfigChange(config)
     }
 
     AnimatedContent(
@@ -78,7 +73,8 @@ fun BooksListScreen(
             is BooksListUiState.Content -> BooksListContent(
                 state = state,
                 onIntent = viewModel::onIntent,
-                onBookClick = onBookClick
+                onBookClick = onBookClick,
+                onQueryChange = { query -> viewModel.onIntent(BooksListIntent.QueryChanged(query)) }
             )
                 }
     }

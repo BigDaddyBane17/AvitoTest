@@ -1,6 +1,7 @@
 package com.avito.profile.presentation
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.avito.profile.di.ProfileComponent
@@ -30,6 +32,7 @@ fun ProfileScreen(
     val viewModel: ProfileViewModel = viewModel(factory = viewModelFactory)
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val context = LocalContext.current
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -37,10 +40,22 @@ fun ProfileScreen(
     }
 
     val contentState = uiState as? ProfileUiState.Content
+    
     LaunchedEffect(contentState?.message) {
-        if (contentState?.message == ProfileViewModel.LOGOUT_MESSAGE) {
+        val message = contentState?.message
+        if (message == ProfileViewModel.LOGOUT_MESSAGE) {
             viewModel.onIntent(ProfileIntent.DismissMessage)
             onLogout()
+        } else if (message != null) {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            viewModel.onIntent(ProfileIntent.DismissMessage)
+        }
+    }
+    
+    LaunchedEffect(contentState?.errorMessage) {
+        contentState?.errorMessage?.let { error ->
+            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+            viewModel.onIntent(ProfileIntent.DismissMessage)
         }
     }
 

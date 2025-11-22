@@ -7,6 +7,7 @@ import com.avito.bookreader.domain.model.BookContent
 import com.avito.bookreader.domain.model.BookFormat
 import com.avito.bookreader.domain.repository.BookReaderRepository
 import com.avito.database.source.BooksLocalDataSource
+import com.avito.firebase.auth.domain.repository.AuthRepository
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @BookReaderScope
 class BookReaderRepositoryImpl @Inject constructor(
     private val localDataSource: BooksLocalDataSource,
-    private val context: Context
+    private val context: Context,
+    private val authRepository: AuthRepository
 ) : BookReaderRepository {
 
     private val prefs: SharedPreferences by lazy {
@@ -30,7 +32,10 @@ class BookReaderRepositoryImpl @Inject constructor(
         runCatching {
             PDFBoxResourceLoader.init(context)
             
-            val bookEntity = localDataSource.getBook(bookId)
+            val userId = authRepository.currentUserInfo()?.uid
+                ?: throw IllegalStateException("Пользователь не авторизован")
+            
+            val bookEntity = localDataSource.getBook(bookId, userId)
                 ?: throw IllegalStateException("Книга не найдена")
 
             val localPath = bookEntity.localPath
@@ -75,7 +80,10 @@ class BookReaderRepositoryImpl @Inject constructor(
 
     override suspend fun deleteBook(bookId: String) {
         withContext(Dispatchers.IO) {
-            val bookEntity = localDataSource.getBook(bookId)
+            val userId = authRepository.currentUserInfo()?.uid
+                ?: throw IllegalStateException("Пользователь не авторизован")
+            
+            val bookEntity = localDataSource.getBook(bookId, userId)
             bookEntity?.localPath?.let { path ->
                 val file = File(path)
                 if (file.exists()) {

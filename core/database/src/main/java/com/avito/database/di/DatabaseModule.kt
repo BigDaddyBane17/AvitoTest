@@ -18,7 +18,9 @@ object DatabaseModule {
             context,
             BooksDatabase::class.java,
             "books.db"
-        ).build()
+        )
+        .addMigrations(BooksDatabase.MIGRATION_1_2)
+        .build()
 
     @Provides
     fun provideBookDao(database: BooksDatabase): BookDao = database.bookDao()

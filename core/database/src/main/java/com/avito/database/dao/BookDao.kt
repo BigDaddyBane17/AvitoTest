@@ -10,14 +10,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface BookDao {
 
-    @Query("SELECT * FROM books ORDER BY sortOrder ASC, title COLLATE NOCASE ASC")
-    fun observeBooks(): Flow<List<BookEntity>>
+    @Query("SELECT * FROM books WHERE userId = :userId ORDER BY sortOrder ASC, title COLLATE NOCASE ASC")
+    fun observeBooks(userId: String): Flow<List<BookEntity>>
 
-    @Query("SELECT * FROM books ORDER BY sortOrder ASC, title COLLATE NOCASE ASC")
-    suspend fun getBooks(): List<BookEntity>
+    @Query("SELECT * FROM books WHERE userId = :userId ORDER BY sortOrder ASC, title COLLATE NOCASE ASC")
+    suspend fun getBooks(userId: String): List<BookEntity>
 
-    @Query("SELECT * FROM books WHERE id = :id LIMIT 1")
-    suspend fun getBook(id: String): BookEntity?
+    @Query("SELECT * FROM books WHERE id = :id AND userId = :userId LIMIT 1")
+    suspend fun getBook(id: String, userId: String): BookEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertBooks(entities: List<BookEntity>)
@@ -30,5 +30,26 @@ interface BookDao {
 
     @Query("UPDATE books SET sortOrder = :sortOrder WHERE id = :id")
     suspend fun updateSortOrder(id: String, sortOrder: Int)
+    
+    @Query("DELETE FROM books WHERE userId != :userId")
+    suspend fun deleteBooksNotBelongingToUser(userId: String)
+    
+    @Query("UPDATE books SET userId = :userId WHERE userId = ''")
+    suspend fun updateEmptyUserId(userId: String)
+    
+    @Query("UPDATE books SET userId = :userId WHERE id = :bookId")
+    suspend fun updateBookUserId(bookId: String, userId: String)
+    
+    @Query("UPDATE books SET userId = :userId WHERE localPath IS NOT NULL AND localPath != '' AND (userId = '' OR userId != :userId)")
+    suspend fun updateUserIdForLocalBooks(userId: String)
+    
+    @Query("SELECT * FROM books WHERE userId = '' OR userId != :userId")
+    suspend fun getBooksNotBelongingToUser(userId: String): List<BookEntity>
+    
+    @Query("SELECT * FROM books WHERE userId = :userId AND localPath IS NOT NULL AND localPath != ''")
+    suspend fun getBooksWithLocalPath(userId: String): List<BookEntity>
+    
+    @Query("SELECT * FROM books WHERE localPath IS NOT NULL AND localPath != ''")
+    suspend fun getAllBooksWithLocalPath(): List<BookEntity>
 }
 

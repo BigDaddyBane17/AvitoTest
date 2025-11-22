@@ -63,8 +63,7 @@ fun BookUploadScreen(
     LaunchedEffect(Unit) {
         onTopBarConfigChange(
             TopBarConfig(
-                title = "Загрузка книги",
-                showBackButton = true
+                title = "Загрузка книги"
             )
         )
     }

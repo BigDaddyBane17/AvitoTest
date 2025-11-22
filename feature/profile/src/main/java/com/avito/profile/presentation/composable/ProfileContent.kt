@@ -91,13 +91,6 @@ fun ProfileContent(
             Text(text = state.phone, style = MaterialTheme.typography.bodyMedium)
         }
 
-        state.errorMessage?.let {
-            Text(text = it, color = MaterialTheme.colorScheme.error)
-        }
-        if (state.message != null && state.message != ProfileViewModel.LOGOUT_MESSAGE) {
-            Text(text = state.message, color = MaterialTheme.colorScheme.primary)
-        }
-
         if (state.isSaving) {
             CircularProgressIndicator()
         }

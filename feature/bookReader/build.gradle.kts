@@ -32,6 +32,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:navigation"))
     implementation(project(":core:database"))
+    implementation(project(":core:firebase"))
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose.base)
     debugImplementation(libs.compose.ui.tooling)

@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.annotation.RememberInComposition
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -115,6 +118,21 @@ fun ContentState(
                     )
                 }
 
+                // Overlay to close settings on background tap
+                if (state.isSettingsVisible) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.3f))
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) {
+                                onIntent(BookReaderIntent.ToggleSettings)
+                            }
+                    )
+                }
+
                 AnimatedVisibility(
                     visible = state.isSettingsVisible,
                     enter = slideInVertically(initialOffsetY = { it }),
@@ -125,6 +143,8 @@ fun ContentState(
                         fontSize = state.fontSize,
                         lineSpacing = state.lineSpacing,
                         theme = state.theme,
+                        backgroundColor = backgroundColor,
+                        textColor = textColor,
                         onFontSizeChanged = { onIntent(BookReaderIntent.FontSizeChanged(it)) },
                         onLineSpacingChanged = { onIntent(BookReaderIntent.LineSpacingChanged(it)) },
                         onThemeChanged = { onIntent(BookReaderIntent.ThemeChanged(it)) }
@@ -178,6 +198,8 @@ private fun SettingsPanel(
     fontSize: FontSize,
     lineSpacing: LineSpacing,
     theme: ReadingTheme,
+    backgroundColor: androidx.compose.ui.graphics.Color,
+    textColor: androidx.compose.ui.graphics.Color,
     onFontSizeChanged: (FontSize) -> Unit,
     onLineSpacingChanged: (LineSpacing) -> Unit,
     onThemeChanged: (ReadingTheme) -> Unit
@@ -186,7 +208,10 @@ private fun SettingsPanel(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor
+        )
     ) {
         Column(
             modifier = Modifier
@@ -196,7 +221,8 @@ private fun SettingsPanel(
         ) {
             Text(
                 text = "Настройки отображения",
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
+                color = textColor
             )
 
             SettingSection(
@@ -204,7 +230,9 @@ private fun SettingsPanel(
                 items = FontSize.entries,
                 selectedItem = fontSize,
                 onItemSelected = onFontSizeChanged,
-                labelProvider = { it.label }
+                labelProvider = { it.label },
+                textColor = textColor,
+                theme = theme
             )
 
             SettingSection(
@@ -212,7 +240,9 @@ private fun SettingsPanel(
                 items = LineSpacing.entries,
                 selectedItem = lineSpacing,
                 onItemSelected = onLineSpacingChanged,
-                labelProvider = { it.label }
+                labelProvider = { it.label },
+                textColor = textColor,
+                theme = theme
             )
 
             SettingSection(
@@ -220,7 +250,9 @@ private fun SettingsPanel(
                 items = ReadingTheme.entries,
                 selectedItem = theme,
                 onItemSelected = onThemeChanged,
-                labelProvider = { it.label }
+                labelProvider = { it.label },
+                textColor = textColor,
+                theme = theme
             )
         }
     }
@@ -232,7 +264,9 @@ private fun <T> SettingSection(
     items: List<T>,
     selectedItem: T,
     onItemSelected: (T) -> Unit,
-    labelProvider: (T) -> String
+    labelProvider: (T) -> String,
+    textColor: androidx.compose.ui.graphics.Color,
+    theme: ReadingTheme
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -240,17 +274,39 @@ private fun <T> SettingSection(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = textColor
         )
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(items) { item ->
+                val isSelected = item == selectedItem
+                val chipContainerColor = when (theme) {
+                    ReadingTheme.DARK -> if (isSelected) Color.Black else Color.Black
+                    else -> if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
+                }
+                val chipLabelColor = when (theme) {
+                    ReadingTheme.DARK -> Color.White
+                    else -> if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else textColor
+                }
+                
                 FilterChip(
-                    selected = item == selectedItem,
+                    selected = isSelected,
                     onClick = { onItemSelected(item) },
-                    label = { Text(labelProvider(item)) }
+                    label = { 
+                        Text(
+                            text = labelProvider(item),
+                            color = chipLabelColor
+                        ) 
+                    },
+                    colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = chipContainerColor,
+                        selectedLabelColor = chipLabelColor,
+                        containerColor = chipContainerColor,
+                        labelColor = chipLabelColor
+                    )
                 )
             }
         }

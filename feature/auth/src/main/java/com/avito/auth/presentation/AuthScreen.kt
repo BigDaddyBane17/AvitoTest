@@ -4,9 +4,12 @@ import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -75,10 +78,11 @@ fun AuthScreen(
             TopBarConfig(
                 title = if (isSignIn) "Вход в аккаунт" else "Регистрация",
                 actions = {
-                    TextButton(onClick = { viewModel.onIntent(AuthIntent.ToggleMode) }) {
-                        Text(
-                            text = if (isSignIn) "Регистрация" else "Войти",
-                            color = MaterialTheme.colorScheme.onPrimary
+                    IconButton(onClick = { viewModel.onIntent(AuthIntent.ToggleMode) }) {
+                        Icon(
+                            imageVector = if (isSignIn) Icons.Default.Add else Icons.Default.AccountCircle,
+                            contentDescription = if (isSignIn) "Регистрация" else "Войти",
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }

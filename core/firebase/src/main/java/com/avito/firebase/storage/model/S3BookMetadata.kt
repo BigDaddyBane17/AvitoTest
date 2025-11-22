@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class S3BookMetadata(
     val id: String,
+    val userId: String,
     val title: String,
     val author: String,
     val fileKey: String,

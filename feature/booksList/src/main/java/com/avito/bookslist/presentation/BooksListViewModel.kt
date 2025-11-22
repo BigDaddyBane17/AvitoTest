@@ -22,9 +22,12 @@ class BooksListViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<BooksListUiState>(BooksListUiState.Loading)
     val uiState: StateFlow<BooksListUiState> = _uiState.asStateFlow()
+    
+    private var observeJob: kotlinx.coroutines.Job? = null
 
     init {
         observeBooks()
+        // Принудительная синхронизация при инициализации очистит старые книги
         refresh(forceRemote = true)
     }
 
@@ -35,6 +38,12 @@ class BooksListViewModel @Inject constructor(
             is BooksListIntent.Delete -> delete(intent.bookId)
             BooksListIntent.Retry -> refresh(forceRemote = true)
             BooksListIntent.PullToRefresh -> refresh(forceRemote = true)
+            BooksListIntent.Refresh -> {
+                // Пересоздаем подписку и обновляем данные
+                observeBooks()
+                // Принудительная синхронизация для получения новых книг после загрузки
+                refresh(forceRemote = true)
+            }
             is BooksListIntent.SortModeChanged -> updateSortMode(intent.sortMode)
             BooksListIntent.ToastShown -> clearToast()
             is BooksListIntent.BookClicked -> Unit
@@ -42,7 +51,9 @@ class BooksListViewModel @Inject constructor(
     }
 
     private fun observeBooks() {
-        viewModelScope.launch {
+        // Отменяем предыдущую подписку, если она есть
+        observeJob?.cancel()
+        observeJob = viewModelScope.launch {
             observeBooksUseCase().collectLatest { books ->
                 val currentQuery = (uiState.value as? BooksListUiState.Content)?.searchQuery.orEmpty()
                 val currentSort = (uiState.value as? BooksListUiState.Content)?.sortMode ?: SortMode.Manual

@@ -9,14 +9,15 @@ import com.amazonaws.ClientConfiguration
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.AmazonS3Client
 import com.avito.core.firebase.BuildConfig
-import com.avito.firebase.storage.model.S3Config
 import com.avito.firebase.storage.S3StorageDataSource
 import com.avito.firebase.storage.model.S3BookMetadata
+import com.avito.firebase.storage.model.S3Config
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.coroutineContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -73,6 +74,7 @@ class BookUploadWorker(
 
             val metadata = S3BookMetadata(
                 id = bookId,
+                userId = currentUser.uid,
                 title = title,
                 author = author,
                 fileKey = customKey,
