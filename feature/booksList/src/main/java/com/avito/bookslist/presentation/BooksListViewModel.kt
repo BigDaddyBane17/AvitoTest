@@ -53,7 +53,9 @@ class BooksListViewModel @Inject constructor(
                     searchQuery = currentQuery,
                     toastMessage = toast,
                     isRefreshing = isRefreshing,
-                    sortMode = currentSort
+                    sortMode = currentSort,
+                    downloadingBookIds = (uiState.value as? BooksListUiState.Content)
+                        ?.downloadingBookIds.orEmpty()
                 )
             }
         }
@@ -91,10 +93,12 @@ class BooksListViewModel @Inject constructor(
     }
 
     private fun download(bookId: String) {
+        updateDownloading(bookId, true)
         viewModelScope.launch {
             downloadBookUseCase(bookId)
                 .onSuccess { showToast("Книга загружена") }
                 .onFailure { error -> showToast(error.message ?: "Не удалось скачать книгу") }
+            updateDownloading(bookId, false)
         }
     }
 
@@ -123,6 +127,17 @@ class BooksListViewModel @Inject constructor(
 
     private fun clearToast() {
         updateContent { it.copy(toastMessage = null) }
+    }
+
+    private fun updateDownloading(bookId: String, isDownloading: Boolean) {
+        updateContent { content ->
+            val updated = if (isDownloading) {
+                content.downloadingBookIds + bookId
+            } else {
+                content.downloadingBookIds - bookId
+            }
+            content.copy(downloadingBookIds = updated)
+        }
     }
 
     private fun updateContent(transform: (BooksListUiState.Content) -> BooksListUiState.Content) {

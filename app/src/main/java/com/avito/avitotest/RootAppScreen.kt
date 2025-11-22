@@ -1,10 +1,8 @@
 package com.avito.avitotest
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,12 +15,15 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.avito.avitotest.R
 import com.avito.avitotest.di.AppComponent
 import com.avito.navigation.BottomNavigationBar
 import com.avito.navigation.ScreenRoute
 import com.avito.navigation.TopAppBar
+import com.avito.navigation.TopBarConfig
+import com.avito.ui.transition.standardFadeIn
+import com.avito.ui.transition.standardFadeOut
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun RootAppScreen(
     isAuthorized: Boolean,
@@ -44,29 +45,29 @@ fun RootAppScreen(
     
     val isBookReaderDestination = currentDestination?.route?.contains("BookReaderRoute") == true
     
-    var onSettingsClick by remember { mutableStateOf<(() -> Unit)?>(null) }
+    var topBarConfig by remember { mutableStateOf<TopBarConfig?>(null) }
 
     Scaffold(
         topBar = {
-            if (!isAuthDestination) {
-                TopAppBar(
-                    navController = navController,
-                    currentDestination = currentDestination,
-                    actions = {
-                        if (isBookReaderDestination && onSettingsClick != null) {
-                            IconButton(onClick = { onSettingsClick?.invoke() }) {
-                                Icon(
-                                    imageVector = Icons.Default.Settings,
-                                    contentDescription = "Настройки"
-                                )
-                            }
-                        }
-                    }
-                )
+            AnimatedVisibility(
+                visible = topBarConfig != null,
+                enter = standardFadeIn(),
+                exit = standardFadeOut()
+            ) {
+                topBarConfig?.let { config ->
+                    TopAppBar(
+                        navController = navController,
+                        config = config
+                    )
+                }
             }
         },
         bottomBar = {
-            if (!isAuthDestination && !isBookReaderDestination) {
+            AnimatedVisibility(
+                visible = !isAuthDestination && !isBookReaderDestination,
+                enter = standardFadeIn(),
+                exit = standardFadeOut()
+            ) {
                 BottomNavigationBar(
                     navController = navController,
                     currentDestination = currentDestination
@@ -81,9 +82,7 @@ fun RootAppScreen(
             appComponent = appComponent,
             googleWebClientId = webClientId,
             modifier = Modifier.padding(padding),
-            onSettingsClickChanged = { callback -> 
-                onSettingsClick = callback
-            }
+            onTopBarConfigChange = { config -> topBarConfig = config }
         )
     }
 }

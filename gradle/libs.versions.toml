@@ -8,6 +8,7 @@ kotlin = "2.2.20"
 kotlinx-serialization = "1.7.3"
 ksp = "2.2.20-2.0.4"
 google-service = "4.4.4"
+pdfbox = "2.0.27.0"
 
 compose-bom = "2025.08.00"
 core-ktx = "1.17.0"
@@ -85,6 +86,8 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
+
+pdfbox-android = { module = "com.tom-roush:pdfbox-android", version.ref = "pdfbox" }
 
 [bundles]
 compose-base = [

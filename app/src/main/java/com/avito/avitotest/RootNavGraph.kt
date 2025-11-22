@@ -16,6 +16,7 @@ import com.avito.bookslist.navigation.booksListScreen
 import com.avito.bookupload.navigation.BookUploadRoute
 import com.avito.bookupload.navigation.bookUploadScreen
 import com.avito.navigation.ScreenRoute
+import com.avito.navigation.TopBarConfig
 import com.avito.profile.navigation.ProfileRoute
 import com.avito.profile.navigation.profileScreen
 
@@ -26,17 +27,17 @@ fun RootNavGraph(
     appComponent: AppComponent,
     googleWebClientId: String,
     modifier: Modifier = Modifier,
-    onSettingsClickChanged: ((() -> Unit)?) -> Unit = {}
+    onTopBarConfigChange: (TopBarConfig?) -> Unit = {}
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier
     ) {
-        addAuthGraph(navController, appComponent, googleWebClientId)
-        addBookListGraph(navController, appComponent, onSettingsClickChanged)
-        addUploadBookGraph(navController, appComponent)
-        addProfileGraph(navController, appComponent)
+        addAuthGraph(navController, appComponent, googleWebClientId, onTopBarConfigChange)
+        addBookListGraph(navController, appComponent, onTopBarConfigChange)
+        addUploadBookGraph(navController, appComponent, onTopBarConfigChange)
+        addProfileGraph(navController, appComponent, onTopBarConfigChange)
     }
 }
 
@@ -45,6 +46,7 @@ private fun NavGraphBuilder.addAuthGraph(
     navController: NavHostController,
     appComponent: AppComponent,
     googleWebClientId: String,
+    onTopBarConfigChange: (TopBarConfig?) -> Unit
 ) {
     navigation<ScreenRoute.Auth>(
         startDestination = AuthRoute,
@@ -58,7 +60,8 @@ private fun NavGraphBuilder.addAuthGraph(
                         inclusive = true
                     }
                 }
-            }
+            },
+            onTopBarConfigChange = onTopBarConfigChange
         )
     }
 }
@@ -67,7 +70,7 @@ private fun NavGraphBuilder.addAuthGraph(
 private fun NavGraphBuilder.addBookListGraph(
     navController: NavHostController,
     appComponent: AppComponent,
-    onSettingsClickChanged: ((() -> Unit)?) -> Unit
+    onTopBarConfigChange: (TopBarConfig?) -> Unit
 ) {
     navigation<ScreenRoute.BookList>(
         startDestination = BooksListRoute
@@ -76,11 +79,12 @@ private fun NavGraphBuilder.addBookListGraph(
             booksListComponentFactory = appComponent.booksListComponentFactory(),
             onBookClick = { bookId ->
                 navController.navigate(BookReaderRoute(bookId))
-            }
+            },
+            onTopBarConfigChange = onTopBarConfigChange
         )
         bookReaderScreen(
             bookReaderComponentFactory = appComponent.bookReaderComponentFactory(),
-            onSettingsClickChanged = onSettingsClickChanged
+            onTopBarConfigChange = onTopBarConfigChange
         )
     }
 }
@@ -89,6 +93,7 @@ private fun NavGraphBuilder.addBookListGraph(
 private fun NavGraphBuilder.addUploadBookGraph(
     navController: NavHostController,
     appComponent: AppComponent,
+    onTopBarConfigChange: (TopBarConfig?) -> Unit
 ) {
     navigation<ScreenRoute.UploadBook>(
         startDestination = BookUploadRoute
@@ -99,7 +104,8 @@ private fun NavGraphBuilder.addUploadBookGraph(
                 navController.navigate(ScreenRoute.BookList) {
                     popUpTo<ScreenRoute.BookList> { inclusive = false }
                 }
-            }
+            },
+            onTopBarConfigChange = onTopBarConfigChange
         )
     }
 }
@@ -108,6 +114,7 @@ private fun NavGraphBuilder.addUploadBookGraph(
 private fun NavGraphBuilder.addProfileGraph(
     navController: NavHostController,
     appComponent: AppComponent,
+    onTopBarConfigChange: (TopBarConfig?) -> Unit
 ) {
     navigation<ScreenRoute.Profile>(
         startDestination = ProfileRoute
@@ -120,7 +127,8 @@ private fun NavGraphBuilder.addProfileGraph(
                         inclusive = true
                     }
                 }
-            }
+            },
+            onTopBarConfigChange = onTopBarConfigChange
         )
     }
 }

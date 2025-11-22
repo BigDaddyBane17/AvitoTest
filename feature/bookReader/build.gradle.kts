@@ -41,6 +41,7 @@ dependencies {
     ksp(libs.dagger.compiler)
     implementation(libs.serialization.json)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.pdfbox.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

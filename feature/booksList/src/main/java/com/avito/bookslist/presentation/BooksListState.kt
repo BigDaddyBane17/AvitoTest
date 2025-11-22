@@ -9,7 +9,8 @@ sealed interface BooksListUiState {
         val searchQuery: String = "",
         val toastMessage: String? = null,
         val isRefreshing: Boolean = false,
-        val sortMode: SortMode = SortMode.Manual
+        val sortMode: SortMode = SortMode.Manual,
+        val downloadingBookIds: Set<String> = emptySet()
     ) : BooksListUiState {
         val filteredBooks: List<LocalBook>
             get() {
