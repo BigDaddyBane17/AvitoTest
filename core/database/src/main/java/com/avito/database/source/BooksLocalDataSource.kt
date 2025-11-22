@@ -11,11 +11,11 @@ class BooksLocalDataSource @Inject constructor(
     private val dao: BookDao
 ) {
 
-    fun observeBooks(): Flow<List<BookEntity>> = dao.observeBooks()
+    fun observeBooks(userId: String): Flow<List<BookEntity>> = dao.observeBooks(userId)
 
-    suspend fun getBooks(): List<BookEntity> = dao.getBooks()
+    suspend fun getBooks(userId: String): List<BookEntity> = dao.getBooks(userId)
 
-    suspend fun getBook(id: String): BookEntity? = dao.getBook(id)
+    suspend fun getBook(id: String, userId: String): BookEntity? = dao.getBook(id, userId)
 
     suspend fun upsertBooks(books: List<BookEntity>) {
         dao.upsertBooks(books)
@@ -27,6 +27,30 @@ class BooksLocalDataSource @Inject constructor(
 
     suspend fun updateLocalPath(id: String, path: String?) {
         dao.updateLocalPath(id, path)
+    }
+    
+    suspend fun deleteBooksNotBelongingToUser(userId: String) {
+        // Сначала обновляем userId для книг с пустым userId (из миграции)
+        dao.updateEmptyUserId(userId)
+        // Затем удаляем все книги, которые не принадлежат текущему пользователю
+        // (книги с localPath и правильным userId не будут удалены)
+        dao.deleteBooksNotBelongingToUser(userId)
+    }
+    
+    suspend fun getBooksNotBelongingToUser(userId: String): List<BookEntity> {
+        return dao.getBooksNotBelongingToUser(userId)
+    }
+    
+    suspend fun updateBookUserId(bookId: String, userId: String) {
+        dao.updateBookUserId(bookId, userId)
+    }
+    
+    suspend fun getBooksWithLocalPath(userId: String): List<BookEntity> {
+        return dao.getBooksWithLocalPath(userId)
+    }
+    
+    suspend fun getAllBooksWithLocalPath(): List<BookEntity> {
+        return dao.getAllBooksWithLocalPath()
     }
 
 }

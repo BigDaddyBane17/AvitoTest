@@ -39,6 +39,7 @@ object BooksListModule {
     fun provideBooksRepository(
         localDataSource: BooksLocalDataSource,
         remoteDataSource: S3BooksRemoteDataSource,
-        fileStorage: BooksFileStorage
-    ): DownloadedBooksRepository = DownloadedBooksRepositoryImpl(localDataSource, remoteDataSource, fileStorage)
+        fileStorage: BooksFileStorage,
+        authRepository: AuthRepository
+    ): DownloadedBooksRepository = DownloadedBooksRepositoryImpl(localDataSource, remoteDataSource, fileStorage, authRepository)
 }

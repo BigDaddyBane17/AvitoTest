@@ -7,15 +7,21 @@ import com.avito.bookreader.domain.model.BookContent
 import com.avito.bookreader.domain.model.BookFormat
 import com.avito.bookreader.domain.repository.BookReaderRepository
 import com.avito.database.source.BooksLocalDataSource
+import com.avito.firebase.auth.domain.repository.AuthRepository
+import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
+import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.text.PDFTextStripper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.zip.ZipFile
 import javax.inject.Inject
 
 @BookReaderScope
 class BookReaderRepositoryImpl @Inject constructor(
     private val localDataSource: BooksLocalDataSource,
-    private val context: Context
+    private val context: Context,
+    private val authRepository: AuthRepository
 ) : BookReaderRepository {
 
     private val prefs: SharedPreferences by lazy {
@@ -24,7 +30,12 @@ class BookReaderRepositoryImpl @Inject constructor(
 
     override suspend fun loadBook(bookId: String): Result<BookContent> = withContext(Dispatchers.IO) {
         runCatching {
-            val bookEntity = localDataSource.getBook(bookId)
+            PDFBoxResourceLoader.init(context)
+            
+            val userId = authRepository.currentUserInfo()?.uid
+                ?: throw IllegalStateException("Пользователь не авторизован")
+            
+            val bookEntity = localDataSource.getBook(bookId, userId)
                 ?: throw IllegalStateException("Книга не найдена")
 
             val localPath = bookEntity.localPath
@@ -35,8 +46,13 @@ class BookReaderRepositoryImpl @Inject constructor(
                 throw IllegalStateException("Файл книги не найден")
             }
 
-            val text = file.readText()
             val format = detectFormat(file.extension)
+            val text = when (format) {
+                BookFormat.TXT -> parseTxt(file)
+                BookFormat.EPUB -> parseEpub(file)
+                BookFormat.PDF -> parsePdf(file)
+                BookFormat.UNKNOWN -> file.readText()
+            }
 
             BookContent(
                 id = bookEntity.id,
@@ -64,7 +80,10 @@ class BookReaderRepositoryImpl @Inject constructor(
 
     override suspend fun deleteBook(bookId: String) {
         withContext(Dispatchers.IO) {
-            val bookEntity = localDataSource.getBook(bookId)
+            val userId = authRepository.currentUserInfo()?.uid
+                ?: throw IllegalStateException("Пользователь не авторизован")
+            
+            val bookEntity = localDataSource.getBook(bookId, userId)
             bookEntity?.localPath?.let { path ->
                 val file = File(path)
                 if (file.exists()) {
@@ -72,6 +91,64 @@ class BookReaderRepositoryImpl @Inject constructor(
                 }
             }
             localDataSource.deleteBook(bookId)
+        }
+    }
+
+    private fun parseTxt(file: File): String {
+        return file.readText(Charsets.UTF_8)
+    }
+
+    private fun parseEpub(file: File): String {
+        val builder = StringBuilder()
+        
+        ZipFile(file).use { zipFile ->
+            val entries = zipFile.entries()
+            val contentFiles = mutableListOf<String>()
+            
+            while (entries.hasMoreElements()) {
+                val entry = entries.nextElement()
+                val name = entry.name.lowercase()
+                
+                if ((name.endsWith(".html") || name.endsWith(".xhtml") || name.endsWith(".htm"))
+                    && !entry.isDirectory) {
+                    contentFiles.add(entry.name)
+                }
+            }
+            
+            contentFiles.sorted().forEach { fileName ->
+                zipFile.getEntry(fileName)?.let { entry ->
+                    zipFile.getInputStream(entry).use { inputStream ->
+                        val content = inputStream.readBytes().toString(Charsets.UTF_8)
+                        
+                        val cleanContent = content
+                            .replace(Regex("<script[^>]*>.*?</script>", RegexOption.DOT_MATCHES_ALL), "")
+                            .replace(Regex("<style[^>]*>.*?</style>", RegexOption.DOT_MATCHES_ALL), "")
+                            .replace(Regex("<[^>]*>"), "")
+                            .replace("&nbsp;", " ")
+                            .replace("&quot;", "\"")
+                            .replace("&amp;", "&")
+                            .replace("&lt;", "<")
+                            .replace("&gt;", ">")
+                            .replace("&apos;", "'")
+                            .replace(Regex("\\s+"), " ")
+                            .trim()
+                        
+                        if (cleanContent.isNotBlank()) {
+                            builder.append(cleanContent)
+                            builder.append("\n\n")
+                        }
+                    }
+                }
+            }
+        }
+        
+        return builder.toString().trim()
+    }
+
+    private fun parsePdf(file: File): String {
+        PDDocument.load(file).use { document ->
+            val stripper = PDFTextStripper()
+            return stripper.getText(document)
         }
     }
 

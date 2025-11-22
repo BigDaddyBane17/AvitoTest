@@ -1,0 +1,337 @@
+package com.avito.bookreader.presentation.composable
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.annotation.RememberInComposition
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.avito.bookreader.presentation.BookReaderIntent
+import com.avito.bookreader.presentation.BookReaderUiState
+import com.avito.common.reader.FontSize
+import com.avito.common.reader.LineSpacing
+import com.avito.common.reader.ReadingTheme
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ContentState(
+    state: BookReaderUiState.Content,
+    onIntent: (BookReaderIntent) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val scrollState = rememberScrollState()
+    val backgroundColor = when (state.theme) {
+        ReadingTheme.LIGHT -> Color.White
+        ReadingTheme.DARK -> Color(0xFF1C1C1E)
+        ReadingTheme.SEPIA -> Color(0xFFF4F1E8)
+    }
+    val textColor = when (state.theme) {
+        ReadingTheme.LIGHT -> Color.Black
+        ReadingTheme.DARK -> Color(0xFFE5E5E7)
+        ReadingTheme.SEPIA -> Color(0xFF5F4B32)
+    }
+
+    LaunchedEffect(state.scrollPosition) {
+        if (state.scrollPosition > 0 && scrollState.value == 0) {
+            scrollState.scrollTo(state.scrollPosition)
+        }
+    }
+
+    LaunchedEffect(scrollState.value, scrollState.maxValue) {
+        onIntent(BookReaderIntent.ScrollPositionChanged(scrollState.value, scrollState.maxValue))
+    }
+
+    Box(
+        modifier = modifier.fillMaxSize()
+    ) {
+        androidx.compose.material3.Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = backgroundColor,
+            bottomBar = {
+                Column {
+                    LinearProgressIndicator(
+                        progress = state.readingProgress / 100f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(backgroundColor)
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Прочитано: ${state.readingProgress.toInt()}%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = textColor
+                        )
+                    }
+                }
+            }
+        ) { padding ->
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(backgroundColor)
+                        .padding(padding)
+                        .verticalScroll(scrollState)
+                        .padding(horizontal = 20.dp, vertical = 16.dp)
+                ) {
+                    Text(
+                        text = state.book.text,
+                        fontSize = (16 * state.fontSize.scale).sp,
+                        lineHeight = (16 * state.fontSize.scale * state.lineSpacing.value).sp,
+                        color = textColor,
+                        textAlign = TextAlign.Justify
+                    )
+                }
+
+                // Overlay to close settings on background tap
+                if (state.isSettingsVisible) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.3f))
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) {
+                                onIntent(BookReaderIntent.ToggleSettings)
+                            }
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = state.isSettingsVisible,
+                    enter = slideInVertically(initialOffsetY = { it }),
+                    exit = slideOutVertically(targetOffsetY = { it }),
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                ) {
+                    SettingsPanel(
+                        fontSize = state.fontSize,
+                        lineSpacing = state.lineSpacing,
+                        theme = state.theme,
+                        backgroundColor = backgroundColor,
+                        textColor = textColor,
+                        onFontSizeChanged = { onIntent(BookReaderIntent.FontSizeChanged(it)) },
+                        onLineSpacingChanged = { onIntent(BookReaderIntent.LineSpacingChanged(it)) },
+                        onThemeChanged = { onIntent(BookReaderIntent.ThemeChanged(it)) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ErrorState(
+    message: String,
+    onRetry: () -> Unit,
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(onClick = onRetry) {
+                Text("Повторить")
+            }
+            Button(
+                onClick = onDelete,
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Text("Удалить")
+            }
+        }
+    }
+}
+
+@Composable
+private fun SettingsPanel(
+    fontSize: FontSize,
+    lineSpacing: LineSpacing,
+    theme: ReadingTheme,
+    backgroundColor: androidx.compose.ui.graphics.Color,
+    textColor: androidx.compose.ui.graphics.Color,
+    onFontSizeChanged: (FontSize) -> Unit,
+    onLineSpacingChanged: (LineSpacing) -> Unit,
+    onThemeChanged: (ReadingTheme) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Настройки отображения",
+                style = MaterialTheme.typography.titleMedium,
+                color = textColor
+            )
+
+            SettingSection(
+                title = "Размер шрифта",
+                items = FontSize.entries,
+                selectedItem = fontSize,
+                onItemSelected = onFontSizeChanged,
+                labelProvider = { it.label },
+                textColor = textColor,
+                theme = theme
+            )
+
+            SettingSection(
+                title = "Межстрочный интервал",
+                items = LineSpacing.entries,
+                selectedItem = lineSpacing,
+                onItemSelected = onLineSpacingChanged,
+                labelProvider = { it.label },
+                textColor = textColor,
+                theme = theme
+            )
+
+            SettingSection(
+                title = "Тема",
+                items = ReadingTheme.entries,
+                selectedItem = theme,
+                onItemSelected = onThemeChanged,
+                labelProvider = { it.label },
+                textColor = textColor,
+                theme = theme
+            )
+        }
+    }
+}
+
+@Composable
+private fun <T> SettingSection(
+    title: String,
+    items: List<T>,
+    selectedItem: T,
+    onItemSelected: (T) -> Unit,
+    labelProvider: (T) -> String,
+    textColor: androidx.compose.ui.graphics.Color,
+    theme: ReadingTheme
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyMedium,
+            color = textColor
+        )
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(items) { item ->
+                val isSelected = item == selectedItem
+                val chipContainerColor = when (theme) {
+                    ReadingTheme.DARK -> if (isSelected) Color.Black else Color.Black
+                    else -> if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
+                }
+                val chipLabelColor = when (theme) {
+                    ReadingTheme.DARK -> Color.White
+                    else -> if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else textColor
+                }
+                
+                FilterChip(
+                    selected = isSelected,
+                    onClick = { onItemSelected(item) },
+                    label = { 
+                        Text(
+                            text = labelProvider(item),
+                            color = chipLabelColor
+                        ) 
+                    },
+                    colors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = chipContainerColor,
+                        selectedLabelColor = chipLabelColor,
+                        containerColor = chipContainerColor,
+                        labelColor = chipLabelColor
+                    )
+                )
+            }
+        }
+    }
+}
+
+private val FontSize.label: String
+    get() = when (this) {
+        FontSize.SMALL -> "Мал."
+        FontSize.MEDIUM -> "Сред."
+        FontSize.LARGE -> "Бол."
+        FontSize.EXTRA_LARGE -> "Оч.бол."
+    }
+
+private val LineSpacing.label: String
+    get() = when (this) {
+        LineSpacing.COMPACT -> "Комп."
+        LineSpacing.NORMAL -> "Норм."
+        LineSpacing.RELAXED -> "Широк."
+    }
+
+private val ReadingTheme.label: String
+    get() = when (this) {
+        ReadingTheme.LIGHT -> "Светлая"
+        ReadingTheme.DARK -> "Тёмная"
+        ReadingTheme.SEPIA -> "Сепия"
+    }
+

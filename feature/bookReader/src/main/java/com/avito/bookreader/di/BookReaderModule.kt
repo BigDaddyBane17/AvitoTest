@@ -5,6 +5,7 @@ import com.avito.bookreader.data.BookReaderRepositoryImpl
 import com.avito.bookreader.data.ReadingPreferencesManager
 import com.avito.bookreader.domain.repository.BookReaderRepository
 import com.avito.database.source.BooksLocalDataSource
+import com.avito.firebase.auth.domain.repository.AuthRepository
 import dagger.Module
 import dagger.Provides
 
@@ -16,9 +17,10 @@ interface BookReaderModule {
         @BookReaderScope
         fun provideBookReaderRepository(
             localDataSource: BooksLocalDataSource,
-            context: Context
+            context: Context,
+            authRepository: AuthRepository
         ): BookReaderRepository {
-            return BookReaderRepositoryImpl(localDataSource, context)
+            return BookReaderRepositoryImpl(localDataSource, context, authRepository)
         }
 
         @Provides

@@ -37,12 +37,18 @@ fun BottomNavigationBar(
                     ?.hierarchy
                     ?.any { it.hasRoute(item.route::class) } == true,
                 onClick = {
-                    navController.navigate(item.route) {
-                        popUpTo<ScreenRoute.BookList> {
-                            saveState = true
+                    // Не навигируем, если уже на этом экране
+                    val isSelected = currentDestination
+                        ?.hierarchy
+                        ?.any { it.hasRoute(item.route::class) } == true
+                    if (!isSelected) {
+                        navController.navigate(item.route) {
+                            popUpTo<ScreenRoute.BookList> {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
