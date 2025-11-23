@@ -1,6 +1,7 @@
 package com.avito.auth.presentation
 
 import android.app.Activity
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,33 +42,51 @@ fun AuthScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val googleSignInOptions = remember(webClientId) {
+        Log.d("AuthScreen", "Creating GoogleSignInOptions with webClientId: ${webClientId.take(20)}...")
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(webClientId)
             .requestEmail()
             .build()
     }
     val googleSignInClient = remember(googleSignInOptions, context) {
+        Log.d("AuthScreen", "Creating GoogleSignInClient")
         GoogleSignIn.getClient(context, googleSignInOptions)
     }
 
     val googleLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
+        Log.d("AuthScreen", "Google sign-in result received. Result code: ${result.resultCode}")
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         try {
             val account = task.getResult(ApiException::class.java)
+            Log.d("AuthScreen", "Google account retrieved. Email: ${account?.email}, Has idToken: ${account?.idToken != null}")
             val token = account?.idToken
             if (token != null) {
+                Log.d("AuthScreen", "Google idToken received, length: ${token.length}")
                 viewModel.onIntent(AuthIntent.GoogleSignInToken(token))
             } else {
+                Log.e("AuthScreen", "Google account retrieved but idToken is null")
                 viewModel.onIntent(AuthIntent.GoogleSignInFailed("Google не вернул токен"))
             }
         } catch (e: ApiException) {
+            Log.e("AuthScreen", "ApiException during Google sign-in", e)
+            Log.e("AuthScreen", "ApiException status code: ${e.statusCode}")
             val message = when (result.resultCode) {
-                Activity.RESULT_CANCELED -> "Вход через Google отменён"
-                else -> e.message ?: "Не удалось выполнить вход через Google"
+                Activity.RESULT_CANCELED -> {
+                    Log.d("AuthScreen", "User canceled Google sign-in")
+                    "Вход через Google отменён"
+                }
+                else -> {
+                    val errorMsg = e.message ?: "Не удалось выполнить вход через Google"
+                    Log.e("AuthScreen", "Google sign-in failed: $errorMsg")
+                    errorMsg
+                }
             }
             viewModel.onIntent(AuthIntent.GoogleSignInFailed(message))
+        } catch (e: Exception) {
+            Log.e("AuthScreen", "Unexpected exception during Google sign-in", e)
+            viewModel.onIntent(AuthIntent.GoogleSignInFailed("Неожиданная ошибка: ${e.message}"))
         }
     }
 
@@ -96,8 +115,25 @@ fun AuthScreen(
             modifier = modifier,
             onIntent = viewModel::onIntent,
             onGoogleSignInClick = {
+                Log.d("AuthScreen", "Google sign-in button clicked")
                 googleSignInClient.signOut().addOnCompleteListener {
-                    googleLauncher.launch(googleSignInClient.signInIntent)
+                    Log.d("AuthScreen", "Google sign-out completed, launching sign-in intent")
+                    try {
+                        val signInIntent = googleSignInClient.signInIntent
+                        Log.d("AuthScreen", "Sign-in intent created, launching...")
+                        googleLauncher.launch(signInIntent)
+                    } catch (e: Exception) {
+                        Log.e("AuthScreen", "Error launching Google sign-in intent", e)
+                        viewModel.onIntent(AuthIntent.GoogleSignInFailed("Ошибка запуска авторизации: ${e.message}"))
+                    }
+                }.addOnFailureListener { e ->
+                    Log.e("AuthScreen", "Error during Google sign-out", e)
+                    try {
+                        googleLauncher.launch(googleSignInClient.signInIntent)
+                    } catch (ex: Exception) {
+                        Log.e("AuthScreen", "Error launching Google sign-in intent after sign-out failure", ex)
+                        viewModel.onIntent(AuthIntent.GoogleSignInFailed("Ошибка запуска авторизации: ${ex.message}"))
+                    }
                 }
             }
         )
@@ -107,6 +143,8 @@ fun AuthScreen(
             }
             UiLoadingState(modifier = modifier.fillMaxSize())
         }
+
     }
 }
+
 

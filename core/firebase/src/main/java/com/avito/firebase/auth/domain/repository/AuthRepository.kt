@@ -7,7 +7,7 @@ interface AuthRepository {
     suspend fun signIn(email: String, password: String): Result<Unit>
     suspend fun signUp(name: String, email: String, password: String): Result<Unit>
     suspend fun sendPasswordReset(email: String): Result<Unit>
-    suspend fun signInWithGoogle(idToken: String): Result<Unit>
+    suspend fun signInWithGoogle(idToken: String): Result<Int>
     suspend fun updateDisplayName(name: String): Result<Unit>
     suspend fun updatePhoto(uri: Uri): Result<Uri>
     fun currentUserInfo(): AuthUserInfo?

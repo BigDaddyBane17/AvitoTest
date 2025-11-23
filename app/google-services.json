@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "284281521350-3282q6agahofml0nj3j9mseu7elh2g14.apps.googleusercontent.com",
+          "client_id": "284281521350-7hhbp2c0j1mbkqtngumno6pd2uae01i3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.avito.avitotest",
-            "certificate_hash": "7ff3e0893217a68ee070f4f5a0fdd79e0c0de48b"
+            "certificate_hash": "8b53649aa8f4f146d36ecb23438eaa93a4f41a17"
           }
         },
         {

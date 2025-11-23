@@ -43,13 +43,28 @@ class FirebaseAuthRepository @Inject constructor(
             }
         }.map { }
 
-    override suspend fun signInWithGoogle(idToken: String): Result<Unit> =
+    override suspend fun signInWithGoogle(idToken: String): Result<Int> =
         runCatching {
+            Log.d(TAG, "signInWithGoogle called, idToken length: ${idToken.length}")
             withContext(Dispatchers.IO) {
-                val credential = GoogleAuthProvider.getCredential(idToken, null)
-                auth.signInWithCredential(credential).await()
+                try {
+                    Log.d(TAG, "Creating GoogleAuthProvider credential")
+                    val credential = GoogleAuthProvider.getCredential(idToken, null)
+                    Log.d(TAG, "Credential created, signing in with Firebase")
+                    val authResult = auth.signInWithCredential(credential).await()
+                    val user = authResult.user
+                    Log.d(TAG, "Firebase sign-in successful. User: ${user?.uid}, Email: ${user?.email}, DisplayName: ${user?.displayName}")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error during Firebase sign-in with Google credential", e)
+                    throw e
+                }
             }
-        }.map { }
+        }.map {
+            Log.d(TAG, "signInWithGoogle completed successfully")
+        }.onFailure { error ->
+            Log.e(TAG, "signInWithGoogle failed", error)
+            Log.e(TAG, "Error type: ${error.javaClass.simpleName}, Message: ${error.message}")
+        }
 
     override suspend fun updateDisplayName(name: String): Result<Unit> =
         runCatching {

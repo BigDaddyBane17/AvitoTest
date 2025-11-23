@@ -1,5 +1,6 @@
 package com.avito.auth.presentation
 
+import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -73,13 +74,19 @@ class AuthViewModel @Inject constructor(
             is AuthIntent.Submit -> submit()
             is AuthIntent.ForgotPassword -> sendReset()
             is AuthIntent.DismissMessage -> updateContent { it.copy(errorMessage = null, infoMessage = null) }
-            is AuthIntent.GoogleSignInToken -> signInWithGoogle(intent.idToken)
-            is AuthIntent.GoogleSignInFailed -> updateContent {
-                it.copy(
-                    isLoading = false,
-                    errorMessage = intent.message,
-                    infoMessage = null
-                )
+            is AuthIntent.GoogleSignInToken -> {
+                Log.d(TAG, "Received Google sign-in token, length: ${intent.idToken.length}")
+                signInWithGoogle(intent.idToken)
+            }
+            is AuthIntent.GoogleSignInFailed -> {
+                Log.e(TAG, "Google sign-in failed: ${intent.message}")
+                updateContent {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = intent.message,
+                        infoMessage = null
+                    )
+                }
             }
         }
     }
@@ -123,9 +130,14 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun signInWithGoogle(idToken: String) {
+        Log.d(TAG, "signInWithGoogle called, token length: ${idToken.length}")
         val current = _uiState.value as? AuthUiState.Content ?: return
-        if (current.isLoading) return
+        if (current.isLoading) {
+            Log.w(TAG, "signInWithGoogle called but already loading")
+            return
+        }
 
+        Log.d(TAG, "Setting loading state and calling use case")
         _uiState.value = current.copy(
             isLoading = true,
             errorMessage = null,
@@ -133,17 +145,33 @@ class AuthViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            val result = signInWithGoogleUseCase(idToken.trim())
-            result
-                .onSuccess { _uiState.value = AuthUiState.Success }
-                .onFailure { error ->
-                    updateContent {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = error.toReadableMessage()
-                        )
+            try {
+                val trimmedToken = idToken.trim()
+                Log.d(TAG, "Calling signInWithGoogleUseCase with trimmed token, length: ${trimmedToken.length}")
+                val result = signInWithGoogleUseCase(trimmedToken)
+                result
+                    .onSuccess {
+                        Log.d(TAG, "Google sign-in successful")
+                        _uiState.value = AuthUiState.Success
                     }
+                    .onFailure { error ->
+                        Log.e(TAG, "Google sign-in failed in use case", error)
+                        updateContent {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = error.toReadableMessage()
+                            )
+                        }
+                    }
+            } catch (e: Exception) {
+                Log.e(TAG, "Unexpected exception in signInWithGoogle", e)
+                updateContent {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = "Неожиданная ошибка: ${e.message}"
+                    )
                 }
+            }
         }
     }
 
@@ -232,5 +260,6 @@ class AuthViewModel @Inject constructor(
 
     companion object {
         private const val MIN_PASSWORD_LENGTH = 6
+        private const val TAG = "AuthViewModel"
     }
 }
