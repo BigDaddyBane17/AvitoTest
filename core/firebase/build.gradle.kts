@@ -24,7 +24,6 @@ android {
     defaultConfig {
         minSdk = 28
 
-        // Прокидываем всё в BuildConfig, чтобы использовать в runtime
         buildConfigField("String", "S3_ENDPOINT", "\"$S3_ENDPOINT\"")
         buildConfigField("String", "S3_REGION", "\"$S3_REGION\"")
         buildConfigField("String", "S3_BUCKET", "\"$S3_BUCKET\"")

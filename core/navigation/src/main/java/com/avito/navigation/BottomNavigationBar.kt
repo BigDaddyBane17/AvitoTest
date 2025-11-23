@@ -37,7 +37,6 @@ fun BottomNavigationBar(
                     ?.hierarchy
                     ?.any { it.hasRoute(item.route::class) } == true,
                 onClick = {
-                    // Не навигируем, если уже на этом экране
                     val isSelected = currentDestination
                         ?.hierarchy
                         ?.any { it.hasRoute(item.route::class) } == true

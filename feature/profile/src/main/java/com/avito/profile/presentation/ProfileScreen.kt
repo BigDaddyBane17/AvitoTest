@@ -65,7 +65,7 @@ fun ProfileScreen(
 
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = androidx.compose.material3.MaterialTheme.colorScheme.background
+        color = MaterialTheme.colorScheme.background
     ) {
         when (val state = uiState) {
             ProfileUiState.Loading -> ProfileLoading()

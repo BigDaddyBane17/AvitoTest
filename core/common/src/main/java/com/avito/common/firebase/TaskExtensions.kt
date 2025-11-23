@@ -5,9 +5,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-/**
- * Lightweight coroutine bridge for Play Services Tasks without relying on external artifacts.
- */
 suspend fun <T> Task<T>.await(): T =
     suspendCancellableCoroutine { continuation ->
         addOnCompleteListener { task ->

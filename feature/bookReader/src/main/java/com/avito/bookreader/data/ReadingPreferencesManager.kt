@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
+import androidx.core.content.edit
 
 @BookReaderScope
 class ReadingPreferencesManager @Inject constructor(
@@ -30,17 +31,17 @@ class ReadingPreferencesManager @Inject constructor(
 
     fun setFontSize(size: FontSize) {
         _fontSize.value = size
-        prefs.edit().putString(KEY_FONT_SIZE, size.name).apply()
+        prefs.edit { putString(KEY_FONT_SIZE, size.name) }
     }
 
     fun setLineSpacing(spacing: LineSpacing) {
         _lineSpacing.value = spacing
-        prefs.edit().putString(KEY_LINE_SPACING, spacing.name).apply()
+        prefs.edit { putString(KEY_LINE_SPACING, spacing.name) }
     }
 
     fun setTheme(theme: ReadingTheme) {
         _theme.value = theme
-        prefs.edit().putString(KEY_THEME, theme.name).apply()
+        prefs.edit { putString(KEY_THEME, theme.name) }
     }
 
     private fun loadFontSize(): FontSize {

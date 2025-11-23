@@ -37,7 +37,6 @@ fun BooksListScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    // Устанавливаем TopBarConfig сразу при входе на экран
     LaunchedEffect(Unit) {
         val initialConfig = TopBarConfig(
             title = "Мои книги"

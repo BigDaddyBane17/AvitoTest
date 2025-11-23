@@ -30,27 +30,16 @@ class BooksLocalDataSource @Inject constructor(
     }
     
     suspend fun deleteBooksNotBelongingToUser(userId: String) {
-        // Сначала обновляем userId для книг с пустым userId (из миграции)
         dao.updateEmptyUserId(userId)
-        // Затем удаляем все книги, которые не принадлежат текущему пользователю
-        // (книги с localPath и правильным userId не будут удалены)
         dao.deleteBooksNotBelongingToUser(userId)
     }
-    
-    suspend fun getBooksNotBelongingToUser(userId: String): List<BookEntity> {
-        return dao.getBooksNotBelongingToUser(userId)
-    }
-    
+
     suspend fun updateBookUserId(bookId: String, userId: String) {
         dao.updateBookUserId(bookId, userId)
     }
     
     suspend fun getBooksWithLocalPath(userId: String): List<BookEntity> {
         return dao.getBooksWithLocalPath(userId)
-    }
-    
-    suspend fun getAllBooksWithLocalPath(): List<BookEntity> {
-        return dao.getAllBooksWithLocalPath()
     }
 
 }

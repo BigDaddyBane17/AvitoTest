@@ -10,9 +10,6 @@ data class TopBarConfig(
     val actions: @Composable RowScope.() -> Unit = {},
     val search: TopBarSearchConfig? = null
 ) {
-    companion object {
-        val Default = TopBarConfig(title = "")
-    }
 }
 
 data class TopBarSearchConfig(

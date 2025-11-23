@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.zip.ZipFile
 import javax.inject.Inject
+import androidx.core.content.edit
 
 @BookReaderScope
 class BookReaderRepositoryImpl @Inject constructor(
@@ -66,9 +67,9 @@ class BookReaderRepositoryImpl @Inject constructor(
 
     override suspend fun saveReadingProgress(bookId: String, position: Int) {
         withContext(Dispatchers.IO) {
-            prefs.edit()
-                .putInt(progressKey(bookId), position)
-                .apply()
+            prefs.edit {
+                putInt(progressKey(bookId), position)
+            }
         }
     }
 

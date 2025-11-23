@@ -161,8 +161,8 @@ private fun UploadForm(
                     style = MaterialTheme.typography.bodyMedium
                 )
                 LinearProgressIndicator(
-                    progress = animatedProgress.value.coerceIn(0f, 1f),
-                    modifier = Modifier.fillMaxWidth()
+                    progress = { animatedProgress.value.coerceIn(0f, 1f) },
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }

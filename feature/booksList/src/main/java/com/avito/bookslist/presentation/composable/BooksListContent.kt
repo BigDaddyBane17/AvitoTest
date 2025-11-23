@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -73,7 +72,6 @@ fun BooksListContent(
                 .padding(top = 12.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Search bar
             SearchBar(
                 value = state.searchQuery,
                 onValueChange = onQueryChange,
@@ -320,14 +318,9 @@ private fun SearchBar(
     placeholder: String,
     modifier: Modifier = Modifier
 ) {
-    // Используем локальное состояние для TextField, чтобы избежать проблем с курсором
     var textFieldValue by remember { mutableStateOf(value) }
     
-    // Синхронизируем только если значение изменилось извне (не пользователем)
-    // Используем LaunchedEffect чтобы избежать проблем с рекомпозицией
     LaunchedEffect(value) {
-        // Обновляем только если значение действительно изменилось извне
-        // и локальное значение отличается от внешнего
         if (textFieldValue != value) {
             textFieldValue = value
         }

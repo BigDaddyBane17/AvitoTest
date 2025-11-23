@@ -81,8 +81,8 @@ fun ContentState(
             bottomBar = {
                 Column {
                     LinearProgressIndicator(
-                        progress = state.readingProgress / 100f,
-                        modifier = Modifier.fillMaxWidth()
+                        progress = { state.readingProgress / 100f },
+                        modifier = Modifier.fillMaxWidth(),
                     )
                     Box(
                         modifier = Modifier
@@ -118,7 +118,6 @@ fun ContentState(
                     )
                 }
 
-                // Overlay to close settings on background tap
                 if (state.isSettingsVisible) {
                     Box(
                         modifier = Modifier
@@ -198,8 +197,8 @@ private fun SettingsPanel(
     fontSize: FontSize,
     lineSpacing: LineSpacing,
     theme: ReadingTheme,
-    backgroundColor: androidx.compose.ui.graphics.Color,
-    textColor: androidx.compose.ui.graphics.Color,
+    backgroundColor: Color,
+    textColor: Color,
     onFontSizeChanged: (FontSize) -> Unit,
     onLineSpacingChanged: (LineSpacing) -> Unit,
     onThemeChanged: (ReadingTheme) -> Unit
@@ -265,7 +264,7 @@ private fun <T> SettingSection(
     selectedItem: T,
     onItemSelected: (T) -> Unit,
     labelProvider: (T) -> String,
-    textColor: androidx.compose.ui.graphics.Color,
+    textColor: Color,
     theme: ReadingTheme
 ) {
     Column(

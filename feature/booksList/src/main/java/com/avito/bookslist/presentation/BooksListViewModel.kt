@@ -27,7 +27,6 @@ class BooksListViewModel @Inject constructor(
 
     init {
         observeBooks()
-        // Принудительная синхронизация при инициализации очистит старые книги
         refresh(forceRemote = true)
     }
 
@@ -39,9 +38,7 @@ class BooksListViewModel @Inject constructor(
             BooksListIntent.Retry -> refresh(forceRemote = true)
             BooksListIntent.PullToRefresh -> refresh(forceRemote = true)
             BooksListIntent.Refresh -> {
-                // Пересоздаем подписку и обновляем данные
                 observeBooks()
-                // Принудительная синхронизация для получения новых книг после загрузки
                 refresh(forceRemote = true)
             }
             is BooksListIntent.SortModeChanged -> updateSortMode(intent.sortMode)
@@ -51,7 +48,6 @@ class BooksListViewModel @Inject constructor(
     }
 
     private fun observeBooks() {
-        // Отменяем предыдущую подписку, если она есть
         observeJob?.cancel()
         observeJob = viewModelScope.launch {
             observeBooksUseCase().collectLatest { books ->

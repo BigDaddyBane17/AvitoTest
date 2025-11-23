@@ -59,7 +59,7 @@ class BookUploadViewModel @Inject constructor(
         }
     }
 
-    private fun cacheFile(uri: android.net.Uri) {
+    private fun cacheFile(uri: Uri) {
         val current = editableState()
         viewModelScope.launch {
             runCatching { cacheBookFileUseCase(uri) }
