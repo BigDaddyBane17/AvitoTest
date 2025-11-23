@@ -1,6 +1,6 @@
 ## О приложении
 
-Avito Books — приложение для чтения электронных книг. Приложение позволяет:
+Приложение для чтения электронных книг. Приложение позволяет:
 
 - Читать книги в форматах TXT, EPUB и PDF
 - Хранить книги в облаке (Яндекс.Облако S3)
@@ -178,27 +178,42 @@ S3_PUBLIC_BASE_URL=https://storage.yandexcloud.net/your-bucket-name
 
 ## Скриншоты
 
-### Экран входа
-![Экран входа](screenshots/auth_screen.png)
+<table>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/00766934-4b52-4841-b2e3-d08f9dfcfaaf" width="260"><br><b>Логин</b></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/03be29c7-702d-4700-a16a-e98ade2581c1" width="260"><br><b>Регистрация</b></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/5d1dc5cc-423a-43ee-98cd-e1239fa1e60c" width="260"><br><b>Список книг</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/a31edcb9-ae6d-43c4-bdb8-8bd096e626f1" width="260"><br><b>Список с книгой</b></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/8b3604ec-06ee-4c71-a502-1030475b83f5" width="260"><br><b>Загрузка книги</b></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/42eb615b-7af3-4125-9889-949cf1aa9d57" width="260"><br><b>Профиль</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/1d64373d-1b91-415a-8d2b-f635ea8a5ccd" width="260"><br><b>Чтение книги</b></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/d3525fe4-f71d-44fe-b36a-05423f195ea7" width="260"><br><b>Настройки чтения</b></td>
+    <td align="center"></td>
+  </tr>
+</table>
 
-### Список книг
-![Список книг](screenshots/books_list.png)
 
-### Чтение книги
-![Чтение книги](screenshots/book_reader.png)
-
-### Профиль
-![Профиль](screenshots/profile.png)
 
 ## Видео демонстрация
 
-[![Демонстрация приложения](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
+<p align="center">
+  <a href="https://github.com/user-attachments/assets/492d613f-2aae-4949-8375-6a234551fa8e">
+    <img src="https://github.com/user-attachments/assets/492d613f-2aae-4949-8375-6a234551fa8e"
+         alt="Видео демонстрация" width="600" style="border-radius: 12px;">
+  </a>
+</p>
+
+<p align="center"><em>Нажмите, чтобы посмотреть видео 🎬</em></p>
 
 ## Скачать APK
 
 Готовый APK файл для установки на устройство:
 
-[Скачать APK (Release)](https://github.com/your-repo/releases/download/v1.0/app-release.apk)
+[Скачать APK (Release)](https://disk.yandex.ru/d/ON4d4a92I4fjeQ)
 
 ### Установка APK
 
