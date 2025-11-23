@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="books_list_title">Мои книги</string>
+    <string name="books_list_search_placeholder">Поиск книг…</string>
+    <string name="books_list_retry">Повторить</string>
+    <string name="books_list_empty">Здесь пока пусто</string>
+    <string name="books_list_empty_search">Ничего не найдено</string>
+    <string name="books_list_available_download">Доступна загрузка</string>
+    <string name="books_list_sort_manual">Моё расположение</string>
+    <string name="books_list_sort_title">По названию</string>
+    <string name="books_list_sort_date">По дате</string>
+</resources>
+
+

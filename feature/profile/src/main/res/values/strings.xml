@@ -1,0 +1,11 @@
+<resources>
+    <string name="profile_title">Профиль</string>
+    <string name="profile_edit">Редактировать имя</string>
+    <string name="profile_cancel">Отменить</string>
+    <string name="profile_save">Сохранить изменения</string>
+    <string name="profile_logout">Выйти из аккаунта</string>
+    <string name="profile_photo_placeholder">Фото профиля</string>
+    <string name="profile_photo_stub">Заглушка</string>
+    <string name="profile_name_placeholder">Имя отсутствует</string>
+</resources>
+

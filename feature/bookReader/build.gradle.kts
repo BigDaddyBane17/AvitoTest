@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -31,6 +32,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:navigation"))
     implementation(project(":core:database"))
+    implementation(project(":core:firebase"))
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose.base)
     debugImplementation(libs.compose.ui.tooling)
@@ -38,6 +40,9 @@ dependencies {
     implementation(libs.bundles.coroutines)
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
+    implementation(libs.serialization.json)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.pdfbox.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

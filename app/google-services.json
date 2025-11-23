@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "284281521350",
+    "project_id": "avitoread",
+    "storage_bucket": "avitoread.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284281521350:android:284fd2987d4fb534a243c7",
+        "android_client_info": {
+          "package_name": "com.avito.avitotest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284281521350-3282q6agahofml0nj3j9mseu7elh2g14.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.avito.avitotest",
+            "certificate_hash": "7ff3e0893217a68ee070f4f5a0fdd79e0c0de48b"
+          }
+        },
+        {
+          "client_id": "284281521350-ivdebv74e4qq89vtncjgqc2979bkgqjn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5Z5CUuq2-1I-F0WEt41ELgBCaNJKcfJM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284281521350-ivdebv74e4qq89vtncjgqc2979bkgqjn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

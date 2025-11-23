@@ -3,7 +3,10 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.firebase)
 }
+
+
 
 android {
     namespace = "com.avito.avitotest"
@@ -40,31 +43,41 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
-    // core
     implementation(project(":core:common"))
     implementation(project(":core:database"))
     implementation(project(":core:firebase"))
     implementation(project(":core:navigation"))
     implementation(project(":core:ui"))
+    implementation(project(":core:di"))
     implementation(project(":feature:auth"))
     implementation(project(":feature:booksList"))
-    implementation(project(":feature:bookDownload"))
     implementation(project(":feature:bookReader"))
+    implementation(project(":feature:bookUpload"))
     implementation(project(":feature:profile"))
 
 
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose.base)
+    implementation(libs.bundles.firebase)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.navigation.compose)
     implementation(libs.bundles.coroutines)
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
+    implementation(libs.aws.android.sdk.s3.v2220)
     implementation(libs.lottie)
     implementation(libs.lottie.compose)
+    androidTestImplementation(platform(libs.firebase.bom))
+    androidTestImplementation(libs.firebase.auth)
+    androidTestImplementation(libs.firebase.firestore)
+    androidTestImplementation(libs.firebase.storage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

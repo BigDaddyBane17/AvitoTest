@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -35,10 +36,18 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose.base)
     debugImplementation(libs.compose.ui.tooling)
+    implementation(libs.compose.material)
     implementation(libs.navigation.compose)
     implementation(libs.bundles.coroutines)
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
+    implementation(libs.lottie)
+    implementation(libs.lottie.compose)
+    api(libs.serialization.json)
+    implementation(libs.accompanist.swiperefresh)
+    implementation(libs.androidx.material.icons.extended)
+
+    implementation(libs.amazon.s3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

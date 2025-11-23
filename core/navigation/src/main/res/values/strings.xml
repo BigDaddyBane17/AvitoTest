@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AvitoTest</string>
+
+    <string name="title_books">Книги</string>
+    <string name="title_upload">Загрузить книгу</string>
+    <string name="title_profile">Профиль</string>
+</resources>

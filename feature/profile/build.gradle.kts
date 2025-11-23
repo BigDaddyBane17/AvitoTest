@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -24,6 +25,12 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        buildConfig = true
+    }
+    kotlin {
+        jvmToolchain(11)
+    }
 }
 
 dependencies {
@@ -32,11 +39,13 @@ dependencies {
     implementation(project(":core:navigation"))
     implementation(project(":core:firebase"))
     implementation(platform(libs.compose.bom))
+    implementation(libs.bundles.firebase)
     implementation(libs.bundles.compose.base)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.navigation.compose)
     implementation(libs.bundles.coroutines)
     implementation(libs.dagger)
+    implementation(libs.coil.compose)
     ksp(libs.dagger.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

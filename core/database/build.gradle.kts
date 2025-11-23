@@ -23,6 +23,7 @@ android {
 
 dependencies {
     implementation(project(":core:common"))
+    implementation(project(":core:di"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.room)
